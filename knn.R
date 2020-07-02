@@ -26,10 +26,10 @@ knn = function(x, t, y, xNew, k, metric = LpNorm) {
 }
 
 
-out = knn(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
-          t = time, 
-          y = dfSmoothNonTest$label, 
-          xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
-          k = 10, 
-          metric = LpNorm)
+# out = knn(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
+#           t = time, 
+#           y = dfSmoothNonTest$label, 
+#           xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
+#           k = 10, 
+#           metric = LpNorm)
 

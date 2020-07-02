@@ -72,11 +72,11 @@ fnwe = function(kernel, h, metric, y, x, xNew, ...) {
   return(out)
 }
 
-
-out2 = fnwe(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
-          t = time, 
-          y = dfSmoothNonTest$label, 
-          xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
-          h = 20, 
-          metric = LpNorm, 
-          kernel = 'gaussian')
+# 
+# out2 = fnwe(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
+#           t = time, 
+#           y = dfSmoothNonTest$label, 
+#           xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
+#           h = 20, 
+#           metric = LpNorm, 
+#           kernel = 'gaussian')

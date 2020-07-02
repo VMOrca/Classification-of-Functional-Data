@@ -36,11 +36,11 @@ karhunenLoeve = function(x, sigma, t, proportion) {
 
 
 
-x = select(dfSmoothNonTest, -idOriginal, -id, -label)
-y = as.vector(x[1, ], mode = 'numeric')
-b = karhunenLoeve(x = y, sigma = varNonTest, t = time, proportion = 0.999)
-b$no_eigen
-
-plot(t, y, type = 'l')
-lines(t, b$xApprox, col = 2)
+# x = select(dfSmoothNonTest, -idOriginal, -id, -label)
+# y = as.vector(x[1, ], mode = 'numeric')
+# b = karhunenLoeve(x = y, sigma = varNonTest, t = time, proportion = 0.999)
+# b$no_eigen
+# 
+# plot(t, y, type = 'l')
+# lines(t, b$xApprox, col = 2)
 

@@ -9,6 +9,20 @@ library(doSNOW)
 library(tictoc)
 library(mlr3)
 
+setwd('D:/Academics/UNSW/Thesis/R/MCO/')
+source('fglm.R')
+source('fglmPred.R')
+source('fnwe.R')
+source('fpca.R')
+source('karhunenLoeve.R')
+source('kernelRule.R')
+source('knn.R')
+source('L2InnerProduct.R')
+source('LpNorm.R')
+source('multipleKarhunenLoeve.R')
+source('mlFramework.R')
+
+
 
 data(MCO)
 dfX = MCO$permea$data %>% 
@@ -34,9 +48,9 @@ df = df[, -(4:(18 + 3))] # why 3: columns of idOriginal, id, label
 time = time[-(1:18)]
 dfMeta = select(df, id, label, idOriginal)
 
-dfControl = filter(df, label == 1)
+dfControl = filter(df, label == 0)
 nControl = dim(dfControl)[1]
-dfTrt = filter(df, label == 2)
+dfTrt = filter(df, label == 1)
 nTrt = dim(dfTrt)[1]
 
 # Plot functional data by groups
@@ -123,8 +137,8 @@ for (i in 1:n) {
 dfSmooth = data.frame(dfSmooth) %>% 
   cbind(df[,  1:3], .)
 colnames(dfSmooth)[4:dim(dfSmooth)[2]] = time
-dfControlSmooth = filter(dfSmooth, label == 1)
-dfTrtSmooth = filter(dfSmooth, label == 2)
+dfControlSmooth = filter(dfSmooth, label == 0)
+dfTrtSmooth = filter(dfSmooth, label == 1)
 
 # Plot SMOOTHED functional data by groups
 par(mfrow = c(2, 1))
@@ -211,21 +225,25 @@ mcoKernelRule$setData(dfMeta = dfMeta,
 mcoKernelRule$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRule$setClassifier('kernelRule')
 tic()
-mcoKernelRule$cvClassifier(iter = 5, hyperparChoice = 10, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernel = 'gaussian') 
+mcoKernelRule$cvClassifier(iter = 5, hyperparChoice = 10:11, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernel = 'gaussian') 
 toc()
 mcoKernelRule$runOnTestSet(t = time, metric = LpNorm, kernel = 'gaussian')
 
 
 
-
-# Functional Principal Component Analysis for smoothed data: dfSmooth
-# - Mean function is calculated using dfSmoothNonTest only as we use test data as 'future' data
-dfSmoothNonTestLabel0 = filter(dfSmoothNonTest, label == 0)
-dfSmoothNonTestLabel1 = filter(dfSmoothNonTest, label == 1)
-meanNonTest = colMeans(select(dfSmoothNonTest, -idOriginal, -id, -label))
-meanNonTestLabel0 = colMeans(select(dfSmoothNonTestLabel0, -idOriginal, -id, -label))
-meanNonTestLabel1 = colMeans(select(dfSmoothNonTestLabel1, -idOriginal, -id, -label))
-varNonTest = var(select(dfSmoothNonTest, -idOriginal, -id, -label))
-varNonTestLabel0 = var(select(dfSmoothNonTestLabel0, -idOriginal, -id, -label))
-varNonTestLabel1 = var(select(dfSmoothNonTestLabel1, -idOriginal, -id, -label))
-
+# Functional GLM
+mcoFglm = mlFramework$new()
+mcoFglm$setData(dfMeta = dfMeta, 
+                      dfAll = select(dfSmooth, -idOriginal), 
+                      dfNonTest = select(dfSmoothNonTest, -idOriginal), 
+                      dfTest = select(dfSmoothTest, -idOriginal), 
+                      nNonTest = nNonTest, 
+                      nTest = nTest, 
+                      idNonTest = idNonTest, 
+                      idTest = idTest)
+mcoFglm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
+mcoFglm$setClassifier('fglm')
+tic()
+mcoFglm$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.9)
+toc()
+mcoFglm$runOnTestSet(t = time, proportion = 0.999)

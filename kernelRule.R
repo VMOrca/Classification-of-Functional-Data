@@ -74,10 +74,10 @@ kernelRule = function(kernel, h, metric, y, x, xNew, ...) {
 }
 
 
-out2 = kernelRule(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
-            t = time, 
-            y = dfSmoothNonTest$label, 
-            xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
-            h = 20, 
-            metric = LpNorm, 
-            kernel = 'gaussian')
+# out2 = kernelRule(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
+#             t = time, 
+#             y = dfSmoothNonTest$label, 
+#             xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
+#             h = 20, 
+#             metric = LpNorm, 
+#             kernel = 'gaussian')
