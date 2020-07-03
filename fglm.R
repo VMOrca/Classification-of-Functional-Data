@@ -5,16 +5,18 @@
 # - t: domain of x(t), must have the same dimension as dim(x)[2]
 # - proportion \in [0, 1] which determines how many principal components (i.e. k) to be preserved in Karhunen Loeve expansion
 # - expansion: type of expansion to be performed. Currently only supports 'kl' (Karhunen-Loeve expansion)
-fglm = function(x, y, t, proportion = 0.999, expansion = 'kl') {
+fglm = function(x, y, t, proportion = 0.999, expansion = 'kl', zeroMeanBool) {
   switch(expansion, 
          # Perform Karhunen Loeve expansion on all observations, i.e. to each row of x
          kl = {
-           klOut = multipleKarhunenLoeve(x = x, t = t, proportion = proportion)
+           klOut = multipleKarhunenLoeve(x = x, t = t, proportion = proportion, zeroMeanBool = zeroMeanBool)
            innerProduct = klOut$innerProduct
            basis = klOut$basis
            m = klOut$no_eigen
            xApprox = klOut$xApprox
          })
+  
+  ave = colMeans(x, na.rm = TRUE)
   
   # Assemble matrix to run glm
   # Covariate matrix is now the matrix innerProduct
@@ -26,6 +28,9 @@ fglm = function(x, y, t, proportion = 0.999, expansion = 'kl') {
   beta = apply(t(basis) * zeta, 2, sum)
 
   out = list('glm' = model,
+             'zeroMeanBool' = zeroMeanBool, 
+             'basisType' = expansion, 
+             'meanProcess' = ave, 
              'intercept' = beta0,
              'zeta' = zeta,
              'beta' = beta,
@@ -39,6 +44,6 @@ fglm = function(x, y, t, proportion = 0.999, expansion = 'kl') {
 
 
 # tic()
-# myGlm = fglm(x = select(dfSmoothNonTest, -idOriginal, -id, -label), 
-#              y = dfSmoothNonTest$label, t = time, proportion = 0.999)
+myGlm = fglm(x = select(dfSmoothNonTest, -idOriginal, -id, -label),
+             y = dfSmoothNonTest$label, t = time, proportion = 0.999, zeroMeanBool = TRUE)
 # toc()

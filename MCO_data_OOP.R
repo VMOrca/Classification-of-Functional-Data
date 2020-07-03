@@ -244,6 +244,7 @@ mcoFglm$setData(dfMeta = dfMeta,
 mcoFglm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFglm$setClassifier('fglm')
 tic()
-mcoFglm$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.9, expansion = 'kl')
+# Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
+mcoFglm$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE)
 toc()
-mcoFglm$runOnTestSet(t = time, proportion = 0.999)
+mcoFglm$runOnTestSet(t = time)
