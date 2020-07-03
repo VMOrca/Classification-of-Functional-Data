@@ -4,13 +4,17 @@
 # - y: label of x, must be a vector
 # - t: domain of x(t), must have the same dimension as dim(x)[2]
 # - proportion \in [0, 1] which determines how many principal components (i.e. k) to be preserved in Karhunen Loeve expansion
-fglm = function(x, y, t, proportion = 0.999) {
-  # Perform Karhunen Loeve expansion on all observations, i.e. to each row of x
-  kl = multipleKarhunenLoeve(x = x, t = t, proportion = proportion)
-  innerProduct = kl$innerProduct
-  basis = kl$basis
-  m = kl$no_eigen
-  xApprox = kl$xApprox
+# - expansion: type of expansion to be performed. Currently only supports 'kl' (Karhunen-Loeve expansion)
+fglm = function(x, y, t, proportion = 0.999, expansion = 'kl') {
+  switch(expansion, 
+         # Perform Karhunen Loeve expansion on all observations, i.e. to each row of x
+         kl = {
+           klOut = multipleKarhunenLoeve(x = x, t = t, proportion = proportion)
+           innerProduct = klOut$innerProduct
+           basis = klOut$basis
+           m = klOut$no_eigen
+           xApprox = klOut$xApprox
+         })
   
   # Assemble matrix to run glm
   # Covariate matrix is now the matrix innerProduct

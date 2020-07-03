@@ -244,6 +244,6 @@ mcoFglm$setData(dfMeta = dfMeta,
 mcoFglm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFglm$setClassifier('fglm')
 tic()
-mcoFglm$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.9)
+mcoFglm$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.9, expansion = 'kl')
 toc()
 mcoFglm$runOnTestSet(t = time, proportion = 0.999)
