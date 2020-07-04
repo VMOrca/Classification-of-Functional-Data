@@ -6,7 +6,7 @@
 fglmPred = function(xNew, t, fglmModel, ...) {
   beta0 = fglmModel$intercept
   beta = fglmModel$beta
-  modelFamily = fglmModel$glm$family
+  modelFamily = fglmModel$model$family
   
   xBeta = as.matrix(xNew) %*% diag(beta, length(beta), length(beta))
   xBetaInnerProduct = apply(xBeta, 1, L2InnerProduct, t = t)
@@ -17,8 +17,8 @@ fglmPred = function(xNew, t, fglmModel, ...) {
 
 
 
-# 
-# 
+
+
 # tic()
 # myGlm = fglm(x = select(dfSmoothNonTest, -idOriginal, -id, -label), 
 #              y = dfSmoothNonTest$label, t = time, proportion = 0.999)

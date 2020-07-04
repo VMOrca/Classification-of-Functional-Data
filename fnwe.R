@@ -1,14 +1,14 @@
 # Function to compute functional Nadaraya-Watson's estimator
-# kernel: asymmetric kernel function
+# kernelChoice: asymmetric kernel function
 # h: bandwidth
 # metric: metric to be used, e.g. LpNorm
 # y = label for training data, must be vector
 # x = training data, must be matrix
 # xNew = validation or test data, must be matrix
 
-fnwe = function(kernel, h, metric, y, x, xNew, ...) {
+fnwe = function(kernelChoice, h, metric, y, x, xNew, ...) {
   # Check which kernel function to use
-  switch(kernel, 
+  switch(kernelChoice, 
          box = {
            k = function(u) {
              out = ifelse(u >= 0 & u <= 1, 1, 0)
@@ -72,11 +72,11 @@ fnwe = function(kernel, h, metric, y, x, xNew, ...) {
   return(out)
 }
 
-# 
+
 # out2 = fnwe(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
 #           t = time, 
 #           y = dfSmoothNonTest$label, 
 #           xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
 #           h = 20, 
 #           metric = LpNorm, 
-#           kernel = 'gaussian')
+#           kernelChoice = 'gaussian')

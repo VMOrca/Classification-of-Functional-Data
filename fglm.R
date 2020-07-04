@@ -27,7 +27,7 @@ fglm = function(x, y, t, proportion = 0.999, expansion = 'kl', zeroMeanBool) {
   # Find beta from zeta
   beta = apply(t(basis) * zeta, 2, sum)
 
-  out = list('glm' = model,
+  out = list('model' = model,
              'zeroMeanBool' = zeroMeanBool, 
              'basisType' = expansion, 
              'meanProcess' = ave, 
@@ -44,6 +44,6 @@ fglm = function(x, y, t, proportion = 0.999, expansion = 'kl', zeroMeanBool) {
 
 
 # tic()
-myGlm = fglm(x = select(dfSmoothNonTest, -idOriginal, -id, -label),
-             y = dfSmoothNonTest$label, t = time, proportion = 0.999, zeroMeanBool = TRUE)
+# myGlm = fglm(x = select(dfSmoothNonTest, -idOriginal, -id, -label),
+             # y = dfSmoothNonTest$label, t = time, proportion = 0.999, zeroMeanBool = TRUE)
 # toc()

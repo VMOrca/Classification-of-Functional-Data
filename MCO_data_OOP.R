@@ -7,7 +7,8 @@ library(ggplot2)
 library(parallel)
 library(doSNOW)
 library(tictoc)
-library(mlr3)
+library(e1071)
+library(R6)
 
 setwd('D:/Academics/UNSW/Thesis/R/MCO/')
 source('fglm.R')
@@ -21,7 +22,8 @@ source('L2InnerProduct.R')
 source('LpNorm.R')
 source('multipleKarhunenLoeve.R')
 source('mlFramework.R')
-
+source('cvFSvm')
+source('fSvmPred')
 
 
 data(MCO)
@@ -206,9 +208,9 @@ mcoFnwe$setData(dfMeta = dfMeta,
 mcoFnwe$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFnwe$setClassifier('fnwe')
 tic()
-mcoFnwe$cvClassifier(iter = 5, hyperparChoice = 10, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernel = 'gaussian') 
+mcoFnwe$cvClassifier(iter = 5, hyperparChoice = 10, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
 toc()
-mcoFnwe$runOnTestSet(t = time, metric = LpNorm, kernel = 'gaussian')
+mcoFnwe$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
 
 
 
@@ -225,9 +227,9 @@ mcoKernelRule$setData(dfMeta = dfMeta,
 mcoKernelRule$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRule$setClassifier('kernelRule')
 tic()
-mcoKernelRule$cvClassifier(iter = 5, hyperparChoice = 10:11, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernel = 'gaussian') 
+mcoKernelRule$cvClassifier(iter = 5, hyperparChoice = 10:11, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
 toc()
-mcoKernelRule$runOnTestSet(t = time, metric = LpNorm, kernel = 'gaussian')
+mcoKernelRule$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
 
 
 
@@ -248,3 +250,27 @@ tic()
 mcoFglm$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE)
 toc()
 mcoFglm$runOnTestSet(t = time)
+
+
+
+
+# Functional SVM
+mcoFSvm = mlFramework$new()
+mcoFSvm$setData(dfMeta = dfMeta, 
+                dfAll = select(dfSmooth, -idOriginal), 
+                dfNonTest = select(dfSmoothNonTest, -idOriginal), 
+                dfTest = select(dfSmoothTest, -idOriginal), 
+                nNonTest = nNonTest, 
+                nTest = nTest, 
+                idNonTest = idNonTest, 
+                idTest = idTest)
+mcoFSvm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
+mcoFSvm$setClassifier('fSvm')
+tic()
+# Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
+svmParChoice = list('gamma' = 1:5, 
+                    'cost' = 1:20)
+mcoFSvm$cvClassifier(iter = 10, hyperparChoice = svmParChoice, nCore = 5, trainingPct = 0.6, 
+                     t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE, kernelChoice = 'radial')
+toc()
+mcoFSvm$runOnTestSet(t = time)
