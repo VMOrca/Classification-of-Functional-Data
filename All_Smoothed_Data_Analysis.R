@@ -35,7 +35,10 @@ mcoKnn$setData(dfMeta = dfMeta,
 mcoKnn$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKnn$setClassifier('knn')
 tic()
-mcoKnn$cvClassifier(iter = 500, hyperparChoice = 1:10, nCore = 10, trainingPct = 0.6, t = time, metric = LpNorm) 
+mcoKnn$cvClassifier(iter = 100, hyperparChoice = 1:round((n/2)), nCore = 10, trainingPct = 0.6, t = time, metric = LpNorm) 
+toc()
+tic()
+mcoKnn$cvClassifier(iter = 5, hyperparChoice = 1:2, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm) 
 toc()
 mcoKnn$runOnTestSet(t = time, metric = LpNorm)
 

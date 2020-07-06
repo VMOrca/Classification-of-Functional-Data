@@ -41,6 +41,7 @@ mlFramework = R6Class(
     hyperParChoice = NA, 
     accuracyValidation = NA, 
     accuracyPrediction = NA, 
+    accuracyValidationAve = NA, 
     
     # Class methods
     # Set working directory
@@ -128,6 +129,7 @@ mlFramework = R6Class(
                  self$meanProcessTraining = tuneSvm$meanProcess
                  self$hyperpar = tuneSvm$modelPar
                  self$accuracyValidation = tuneSvm$accuracyValidation
+                 self$accuracyValidationAve = tuneSvm$accuracyValidationAve
                  self$model = tuneSvm$model
                  self$proportion = tuneSvm$proportion
                  self$zeroMeanBool = tuneSvm$zeroMeanBool
@@ -149,46 +151,46 @@ mlFramework = R6Class(
         for (k in 1:length(hyperparChoice)) {
           accuracyWithinIter = foreach(i = 1:iter, .combine = 'c',  .options.snow = opts, 
                                        .export = c('LpNorm', 'knn', 'fnwe', 'kernelRule'), .packages = c('R6', 'dplyr')) %dopar% {
-                                         idTraining = sort(sample(dfNonTest$id, nAll * trainingPct))
-                                         idValidation = dfNonTest$id[!dfNonTest$id %in% idTraining]
-                                         dfTraining = dplyr::filter(dfNonTest, id %in% idTraining)
-                                         dfValidation = dplyr::filter(dfNonTest, id %in% idValidation)
-                                         switch(classifier, 
-                                                knn = {
-                                                  out = knn(x = dplyr::select(dfTraining, -label, -id),
-                                                            y = dfTraining$label,
-                                                            xNew = dplyr::select(dfValidation, -label, -id),
-                                                            k = hyperparChoice[k],
-                                                            ...)
-                                                  # Sys.sleep(0.1)
-                                                  # out = list()
-                                                  # out[['Label Prediction']] = 1
-                                                }, 
-                                                fnwe = {
-                                                  out = fnwe(x = dplyr::select(dfTraining, -label, -id),
-                                                             y = dfTraining$label,
-                                                             xNew = dplyr::select(dfValidation, -label, -id),
-                                                             h = hyperparChoice[k],
-                                                             ...)
-                                                  # Sys.sleep(0.1)
-                                                  # out = list()
-                                                  # out[['Label Prediction']] = 1
-                                                }, 
-                                                kernelRule = {
-                                                  out = kernelRule(x = dplyr::select(dfTraining, -label, -id),
-                                                                   y = dfTraining$label,
-                                                                   xNew = dplyr::select(dfValidation, -label, -id),
-                                                                   h = hyperparChoice[k], 
-                                                                   ...)
-                                                }, 
-                                                fglm = {
-                                                  stop('Do you really need to do cross validation on a GLM? There is no hyperparameter to tune!')
-                                                })
-                                         predLabel = as.integer(out[['Label Prediction']])
-                                         validationLabel = dfValidation$label
-                                         out = length(which(predLabel == validationLabel))/length(idValidation)
-                                         return(out)
-                                       }
+             idTraining = sort(sample(dfNonTest$id, nAll * trainingPct))
+             idValidation = dfNonTest$id[!dfNonTest$id %in% idTraining]
+             dfTraining = dplyr::filter(dfNonTest, id %in% idTraining)
+             dfValidation = dplyr::filter(dfNonTest, id %in% idValidation)
+             switch(classifier, 
+                    knn = {
+                      out = knn(x = dplyr::select(dfTraining, -label, -id),
+                                y = dfTraining$label,
+                                xNew = dplyr::select(dfValidation, -label, -id),
+                                k = hyperparChoice[k],
+                                ...)
+                      # Sys.sleep(0.1)
+                      # out = list()
+                      # out[['Label Prediction']] = 1
+                    }, 
+                    fnwe = {
+                      out = fnwe(x = dplyr::select(dfTraining, -label, -id),
+                                 y = dfTraining$label,
+                                 xNew = dplyr::select(dfValidation, -label, -id),
+                                 h = hyperparChoice[k],
+                                 ...)
+                      # Sys.sleep(0.1)
+                      # out = list()
+                      # out[['Label Prediction']] = 1
+                    }, 
+                    kernelRule = {
+                      out = kernelRule(x = dplyr::select(dfTraining, -label, -id),
+                                       y = dfTraining$label,
+                                       xNew = dplyr::select(dfValidation, -label, -id),
+                                       h = hyperparChoice[k], 
+                                       ...)
+                    }, 
+                    fglm = {
+                      stop('Do you really need to do cross validation on a GLM? There is no hyperparameter to tune!')
+                    })
+             predLabel = as.integer(out[['Label Prediction']])
+             validationLabel = dfValidation$label
+             out = length(which(predLabel == validationLabel))/length(idValidation)
+             return(out)
+           }
           accuracyAve[k] = mean(accuracyWithinIter)
           # Log progress of the outer loop to a local file
           sink(paste(self$wd, "hyperparChoice_Round.txt", sep = ''))
@@ -200,7 +202,8 @@ mlFramework = R6Class(
         hyperpar = hyperparChoice[which(accuracyAve == max(accuracyAve))]
         self$accuracyValidation = accuracy
         self$hyperpar = hyperpar
-        
+        self$accuracyValidationAve = data.frame('hyperparameter' = hyperparChoice, 
+                                                'accuracy' = accuracyAve)
         stopCluster(cl)
       }
     }, 

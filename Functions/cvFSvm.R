@@ -50,6 +50,7 @@ cvFSvm = function(x, y, t, proportion = 0.99, expansion = 'kl', zeroMeanBool, ke
   model = svm(yFactor ~ ., data = df, kernel = kernelChoice, gamma = hyperpar$gamma, cost = hyperpar$cost)
   
   out = list('model' = model,
+             'accuracyValidationAve' = mutate(svmTune, accuracy = 1 - error), 
              'accuracyValidation' = 1 - svmBestModel[, 'error'], 
              'zeroMeanBool' = zeroMeanBool, 
              'basisType' = expansion, 
@@ -66,10 +67,10 @@ cvFSvm = function(x, y, t, proportion = 0.99, expansion = 'kl', zeroMeanBool, ke
 
 
 
-# svmParChoice = list('gamma' = 1:5, 
-#                     'cost' = 1:20)
-# a = cvSvm(x =  select(dfSmoothNonTest, -idOriginal, -id, -label), 
-#       y = dfSmoothNonTest$label, 
-#       t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE, kernelChoice = 'radial', hyperparChoice = svmParChoice, 
-#       iter = 10, nCore = 5, 
+# svmParChoice = list('gamma' = 1:5,
+#                     'cost' = 1:5)
+# a = cvFSvm(x =  select(dfSmoothNonTest, -idOriginal, -id, -label),
+#       y = dfSmoothNonTest$label,
+#       t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE, kernelChoice = 'radial', hyperparChoice = svmParChoice,
+#       iter = 10, nCore = 5,
 #       nAll = 90, trainingPct = 0.6)
