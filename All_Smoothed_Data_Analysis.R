@@ -144,3 +144,5 @@ mcoFSvm$cvClassifier(iter = 10, hyperparChoice = svmParChoice, nCore = 5, traini
                      t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE, kernelChoice = 'radial')
 toc()
 mcoFSvm$runOnTestSet(t = time)
+
+save(mcoFSvm, file = 'mcoFSvm.R')
