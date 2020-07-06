@@ -11,8 +11,8 @@
 # - Basis: truncated eigenvector of x
 # - no_eigen: number of eigenvalues preserved
 # - xApprox: approximated value of x at each point t
-karhunenLoeve = function(x, sigma, t, proportion) {
-  pca = fpca(sigma, t, proportion)
+karhunenLoeve = function(x, sigma, t, proportion, nBasis = NA) {
+  pca = fpca(sigma, t, proportion, nBasis)
   eigenvector = pca$truncatedEigenvector
   eigenvalue = pca$truncatedEigenvalue
   

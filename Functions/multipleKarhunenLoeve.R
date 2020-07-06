@@ -2,7 +2,7 @@
 # - x: function to be approximated by Karhunen-Loeve expansion, must be in matrix form (i.e. 1st discretised function in 1st row)
 # - t: domain of x(t), must have the same dimension as dim(x)[2]
 # - proportion \in [0, 1] which determines how many principal components (i.e. k) to be preserved
-multipleKarhunenLoeve = function(x, t, proportion, zeroMeanBool) {
+multipleKarhunenLoeve = function(x, t, proportion, zeroMeanBool, nBasis = NA) {
   n = dim(x)[1]
   xApprox = matrix(rep(NA, n * length(t)), nrow = n)
   
@@ -16,7 +16,7 @@ multipleKarhunenLoeve = function(x, t, proportion, zeroMeanBool) {
   sigma = var(zeroMeanX)
   
   # Need to perform Karhunen Loeve once to decide dimension of inner products and basis
-  dummyRun = karhunenLoeve(x = as.vector(zeroMeanX[1, ], mode = 'numeric'), sigma = sigma, t = t, proportion = proportion)
+  dummyRun = karhunenLoeve(x = as.vector(zeroMeanX[1, ], mode = 'numeric'), sigma = sigma, t = t, proportion = proportion, nBasis = nBasis)
   m = dummyRun$no_eigen
   innerProduct = matrix(rep(NA, n * m), nrow = n)
   innerProduct[1, ] = dummyRun$innerProduct
@@ -25,7 +25,7 @@ multipleKarhunenLoeve = function(x, t, proportion, zeroMeanBool) {
   
   # Find Karhunen Loeve expansion for all rows of x
   for (i in 2:n) {
-    kl = karhunenLoeve(x = as.vector(zeroMeanX[i, ], mode = 'numeric'), sigma = sigma, t = t, proportion = proportion)
+    kl = karhunenLoeve(x = as.vector(zeroMeanX[i, ], mode = 'numeric'), sigma = sigma, t = t, proportion = proportion, nBasis = nBasis)
     innerProduct[i, ] = kl$innerProduct
     xApprox[i, ] = kl$xApprox
   }

@@ -213,6 +213,7 @@ mlFramework = R6Class(
       hyperpar = self$hyperpar
       model = self$model
       par = self$par
+      basis = self$basis
       basisType = self$basisType
       ave = self$meanProcessTraining
       zeroMeanBool = self$zeroMeanBool
@@ -261,7 +262,8 @@ mlFramework = R6Class(
              fSvm = {
                yLabel = fSvmPred(xNew = dplyr::select(dfTest, -label, -id), 
                                  model = model, 
-                                 zeroMeanBool = zeroMeanBool, proportion = proportion, expansion = basisType, 
+                                 zeroMeanBool = zeroMeanBool, expansion = basisType, 
+                                 nBasis = dim(basis)[2], 
                                  ...)
                
                out = list('Label Prediction' = as.character(yLabel), 
