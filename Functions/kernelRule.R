@@ -61,7 +61,13 @@ kernelRule = function(kernelChoice, h, metric, y, x, xNew, ...) {
         probMatrix[i, j] = sum(kernelValue[which(y == rep(label, n)), j])
       }
     }
-    probMatrix[, j] = probMatrix[, j]/sum(probMatrix[, j])
+    # Set probMatrix[, j] to have equal probability if all the entries of probMatrix[, j] are 0
+    # It can happen when K(d[, j]/h), i.e. all entries in kernelValue at j-th column are large, especially when h is small, e.g. h = 1
+    if (sum(probMatrix[, j]) == 0) {
+      probMatrix[, j] = rep(1/length(uniqueLabel), length(uniqueLabel))
+    } else{
+      probMatrix[, j] = probMatrix[, j]/sum(probMatrix[, j])
+    }
   }
   
   # Find which label gives max predictive probability
@@ -74,10 +80,10 @@ kernelRule = function(kernelChoice, h, metric, y, x, xNew, ...) {
 }
 
 
-# out2 = kernelRule(x = select(dfSmoothNonTest, -label, -idOriginal, -id),
+# out2 = kernelRule(x = select(dfUnSmoothNonTest, -label, -idOriginal, -id),
 #             t = time,
-#             y = dfSmoothNonTest$label,
-#             xNew = select(dfSmoothTest, -label, -idOriginal, -id),
-#             h = 20,
+#             y = dfUnSmoothNonTest$label,
+#             xNew = select(dfUnSmoothTest, -label, -idOriginal, -id),
+#             h = 2,
 #             metric = LpNorm,
 #             kernelChoice = 'gaussian')

@@ -149,13 +149,21 @@ dfTrtSmooth = filter(dfSmooth, label == 1)
 # Plot SMOOTHED functional data by groups
 par(mfrow = c(2, 1))
 plot(time, dfControlSmooth[1, columnIsTimeIndex], type = 'l', col = 1, ylim = c(0, xMax), 
-     xlab = 'Time', ylab = 'MCO', main = paste('MCO(Label = ', as.character(unique(dfControlSmooth[, 'label'])), ')', sep = ''))
+     xlab = 'Time', ylab = 'MCO',
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfControlSmooth[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfControlSmooth$id))), 
+                  ')', sep = ''))
 for (i in 2:nControl) {
   lines(time, dfControlSmooth[i, columnIsTimeIndex], type = 'l', col = 1)
 }
 
 plot(time, dfTrtSmooth[1, columnIsTimeIndex], type = 'l', col = 2, ylim = c(0, xMax), 
-     xlab = 'Time', ylab = 'MCO', main = paste('MCO(Label = ', as.character(unique(dfTrtSmooth[, 'label'])), ')', sep = ''))
+     xlab = 'Time', ylab = 'MCO', 
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfTrtSmooth[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfTrtSmooth$id))), 
+                  ')', sep = ''))
 for (i in 2:nTrt) {
   lines(time, dfTrtSmooth[i, columnIsTimeIndex], type = 'l', col = 2)
 }
@@ -164,10 +172,10 @@ for (i in 2:nTrt) {
 
 
 #=============================================================================================================
-# From smoothed data plot we can see that a small proportion of observations have MCO higher than 2.0
+# From smoothed data plot we can see that a small proportion of observations have MCO >= 2.0
 # Try separate these observations and analyse them separately
 
-# Transform dfSmooth to long format, then exclude the id whose maximum MCO reading is higher than 2.0
+# Transform dfSmooth to long format, then exclude the id whose maximum MCO reading is >= 2.0
 dfSmoothLong = tidyr::gather(dfSmooth, time, value, '180':'3590', factor_key = FALSE) %>% 
   arrange(id, as.numeric(time))
 dfSmoothLongBelow2 = dfSmoothLong %>% 
@@ -185,15 +193,64 @@ dfTrtSmoothBelow2 = filter(dfSmoothBelow2, label == 1)
 # Plot
 par(mfrow = c(2, 1))
 plot(time, dfControlSmoothBelow2[1, columnIsTimeIndex], type = 'l', col = 1, ylim = c(0, 2), 
-     xlab = 'Time', ylab = 'MCO', main = paste('MCO(Label = ', as.character(unique(dfControlSmoothBelow2[, 'label'])), ')', sep = ''))
+     xlab = 'Time', ylab = 'MCO', 
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfControlSmoothBelow2[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfControlSmoothBelow2$id))), 
+                  ')', sep = ''))
 for (i in 2:nControl) {
   lines(time, dfControlSmoothBelow2[i, columnIsTimeIndex], type = 'l', col = 1)
 }
 
 plot(time, dfTrtSmoothBelow2[1, columnIsTimeIndex], type = 'l', col = 2, ylim = c(0, 2), 
-     xlab = 'Time', ylab = 'MCO', main = paste('MCO(Label = ', as.character(unique(dfTrtSmoothBelow2[, 'label'])), ')', sep = ''))
+     xlab = 'Time', ylab = 'MCO', 
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfTrtSmoothBelow2[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfTrtSmoothBelow2$id))), 
+                  ')', sep = ''))
 for (i in 2:nTrt) {
   lines(time, dfTrtSmoothBelow2[i, columnIsTimeIndex], type = 'l', col = 2)
+}
+
+
+
+
+
+
+#=============================================================================================================
+# Exclude the id where at least one of its MCO reading is < 2.0 at any time t
+dfSmoothLongAbove2 = dfSmoothLong %>% 
+  group_by(id) %>% 
+  filter(any(value >= 2)) %>% 
+  ungroup(id)
+dfSmoothAbove2 = dfSmoothLongAbove2 %>% 
+  tidyr::spread(time, value)
+nameChar = names(select(dfSmoothAbove2, -idOriginal, -id, -label))
+dfSmoothAbove2 = dfSmoothAbove2[, c(1:3, order(as.numeric(nameChar)) + 3)] %>% 
+  as.data.frame(.)
+dfControlSmoothAbove2 = filter(dfSmoothAbove2, label == 0)
+dfTrtSmoothAbove2 = filter(dfSmoothAbove2, label == 1)
+
+# Plot
+par(mfrow = c(2, 1))
+plot(time, dfControlSmoothAbove2[1, columnIsTimeIndex], type = 'l', col = 1, ylim = c(0, xMax), 
+     xlab = 'Time', ylab = 'MCO', 
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfControlSmoothAbove2[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfControlSmoothAbove2$id))), 
+                  ')', sep = ''))
+for (i in 2:nControl) {
+  lines(time, dfControlSmoothAbove2[i, columnIsTimeIndex], type = 'l', col = 1)
+}
+
+plot(time, dfTrtSmoothAbove2[1, columnIsTimeIndex], type = 'l', col = 2, ylim = c(0, xMax), 
+     xlab = 'Time', ylab = 'MCO', 
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfTrtSmoothAbove2[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfTrtSmoothAbove2$id))), 
+                  ')', sep = ''))
+for (i in 2:nTrt) {
+  lines(time, dfTrtSmoothAbove2[i, columnIsTimeIndex], type = 'l', col = 2)
 }
 
 
