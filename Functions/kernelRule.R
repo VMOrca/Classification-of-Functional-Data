@@ -53,7 +53,7 @@ kernelRule = function(kernelChoice, h, metric, y, x, xNew, ...) {
   # Calculate (\sum_{i = 1}^n K(d(x, xnew)/h) 1_{y_i = y})/(\sum_{i = 1}^n K(d(x, xnew)/h))
   probMatrix = matrix(rep(NA, m * length(uniqueLabel)), ncol = m)
   for (j in 1:m) {
-    for (i in uniqueLabel){
+    for (i in 1:length(uniqueLabel)){
       label = uniqueLabel[i]
       if (sum(kernelValue[, j]) == 0) {
         probMatrix[i, j] = 0
@@ -74,10 +74,10 @@ kernelRule = function(kernelChoice, h, metric, y, x, xNew, ...) {
 }
 
 
-# out2 = kernelRule(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
-#             t = time, 
-#             y = dfSmoothNonTest$label, 
-#             xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
-#             h = 20, 
-#             metric = LpNorm, 
+# out2 = kernelRule(x = select(dfSmoothNonTest, -label, -idOriginal, -id),
+#             t = time,
+#             y = dfSmoothNonTest$label,
+#             xNew = select(dfSmoothTest, -label, -idOriginal, -id),
+#             h = 20,
+#             metric = LpNorm,
 #             kernelChoice = 'gaussian')
