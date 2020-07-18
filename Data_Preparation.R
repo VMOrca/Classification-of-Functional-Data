@@ -1,5 +1,6 @@
 options(stringsAsFactors = FALSE)
 
+library(R6)
 library(fda.usc)
 library(tidyverse)
 library(fda)
@@ -8,7 +9,7 @@ library(parallel)
 library(doSNOW)
 library(tictoc)
 library(e1071)
-library(R6)
+
 
 setwd('D:/Academics/UNSW/Thesis/R/MCO/')
 source('Functions/fglm.R')
@@ -61,13 +62,21 @@ nTrt = dim(dfTrt)[1]
 par(mfrow = c(2, 1))
 columnIsTimeIndex = 4:(dim(df)[2])
 plot(time, dfControl[1, columnIsTimeIndex], type = 'l', col = 1, ylim = c(0, xMax), 
-     xlab = 'Time', ylab = 'MCO', main = paste('MCO(Label = ', as.character(unique(dfControl[, 'label'])), ')', sep = ''))
+     xlab = 'Time', ylab = 'MCO', 
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfControl[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfControl$id))), 
+                  ')', sep = ''))
 for (i in 2:nControl) {
   lines(time, dfControl[i, columnIsTimeIndex], type = 'l', col = 1)
 }
 
 plot(time, dfTrt[1, columnIsTimeIndex], type = 'l', col = 2, ylim = c(0, xMax), 
-     xlab = 'Time', ylab = 'MCO', main = paste('MCO(Label = ', as.character(unique(dfTrt[, 'label'])), ')', sep = ''))
+     xlab = 'Time', ylab = 'MCO', 
+     main = paste('MCO(Label = ', 
+                  as.character(unique(dfTrt[, 'label'])), 
+                  ', n = ', as.character(length(unique(dfTrt$id))), 
+                  ')', sep = ''))
 for (i in 2:nTrt) {
   lines(time, dfTrt[i, columnIsTimeIndex], type = 'l', col = 2)
 }

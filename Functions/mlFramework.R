@@ -141,7 +141,7 @@ mlFramework = R6Class(
         
         # This group of classifier has only one hyperparameter to be tuned
         # Monitor bar for parallel computing
-        pb <- txtProgressBar(min = 0, max = iter, style = 3)
+        pb <- txtProgressBar(min = 0, max = length(hyperparChoice), style = 3)
         progress <- function(n) setTxtProgressBar(pb, n)
         opts <- list(progress = progress)
         
@@ -149,7 +149,7 @@ mlFramework = R6Class(
         accuracyAve = rep(NA, length(hyperparChoice))
         
         for (k in 1:length(hyperparChoice)) {
-          accuracyWithinIter = foreach(i = 1:iter, .combine = 'c',  .options.snow = opts, 
+          accuracyWithinIter = foreach(i = 1:iter, .combine = 'c',  #.options.snow = opts, 
                                        .export = c('LpNorm', 'knn', 'fnwe', 'kernelRule'), .packages = c('R6', 'dplyr')) %dopar% {
              idTraining = sort(sample(dfNonTest$id, nAll * trainingPct))
              idValidation = dfNonTest$id[!dfNonTest$id %in% idTraining]
@@ -196,12 +196,19 @@ mlFramework = R6Class(
           sink(paste(self$wd, "hyperparChoice_Round.txt", sep = ''))
           cat(sprintf('Hyperparameter: %i/%i', k, length(hyperparChoice)))
           sink()
+          
+          setTxtProgressBar(pb, k)
         }
         
         accuracy = max(accuracyAve)
         hyperpar = hyperparChoice[which(accuracyAve == max(accuracyAve))]
         self$accuracyValidation = accuracy
-        self$hyperpar = hyperpar
+        # If there are multiple hyperpar, randomly choose one
+        if (length(hyperpar) > 1) {
+          self$hyperpar = sample(hyperpar, 1)
+        } else {
+          self$hyperpar = hyperpar
+        }
         self$accuracyValidationAve = data.frame('hyperparameter' = hyperparChoice, 
                                                 'accuracy' = accuracyAve)
         stopCluster(cl)

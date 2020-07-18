@@ -53,7 +53,7 @@ fnwe = function(kernelChoice, h, metric, y, x, xNew, ...) {
   # Calculate (\sum_{i = 1}^n K(d(x, xnew)/h) 1_{y_i = y})/(\sum_{i = 1}^n K(d(x, xnew)/h))
   probMatrix = matrix(rep(NA, m * length(uniqueLabel)), ncol = m)
   for (j in 1:m) {
-    for (i in uniqueLabel){
+    for (i in 1:length(uniqueLabel)){
         label = uniqueLabel[i]
         if (sum(kernelValue[, j]) == 0) {
           probMatrix[i, j] = 0
@@ -62,6 +62,8 @@ fnwe = function(kernelChoice, h, metric, y, x, xNew, ...) {
         }
     }
   }
+  
+  
   
   # Find which label gives max predictive probability
   yPred = uniqueLabel[apply(probMatrix, 2, which.max)]
@@ -80,3 +82,4 @@ fnwe = function(kernelChoice, h, metric, y, x, xNew, ...) {
 #           h = 20, 
 #           metric = LpNorm, 
 #           kernelChoice = 'gaussian')
+

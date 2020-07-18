@@ -21,7 +21,8 @@ fglm = function(x, y, t, proportion = 0.999, expansion = 'kl', zeroMeanBool) {
   # Assemble matrix to run glm
   # Covariate matrix is now the matrix innerProduct
   df = cbind(y, data.frame(innerProduct))
-  model = glm(y ~ ., data = df, family = binomial(link = 'logit'))
+  model = glm(y ~ ., data = df, family = binomial(link = 'logit'),
+              control = list(maxit = 50))
   beta0 = model$coefficients[1]
   zeta = model$coefficients[-1]
   # Find beta from zeta

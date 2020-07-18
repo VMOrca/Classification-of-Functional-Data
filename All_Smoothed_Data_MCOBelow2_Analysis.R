@@ -9,6 +9,7 @@ idAllBelow2 = unique(dfSmoothBelow2$id)
 nBelow2 = length(idAllBelow2)
 dfBelow2Meta = select(dfSmoothBelow2, id, label, idOriginal)
 
+nCore = 5
 
 # Divide all subjects to traing/validation/test sets
 # Test: 20% fixed subjects. Training/Validation: 60%/20% which will vary between the remaining subjects for each round of cross validation
@@ -31,23 +32,24 @@ nBelow2Validation = round(nBelow2 * 0.2)
 # Functional knn
 set.seed(1)
 mcoKnnBelow2 = mlFramework$new()
-mcoKnnBelow2$setData(dfMeta = dfBelow2Meta, 
-                     dfAll = select(dfSmoothBelow2, -idOriginal), 
-                     dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal), 
-                     dfTest = select(dfSmoothBelow2Test, -idOriginal), 
-                     nNonTest = nBelow2NonTest, 
-                     nTest = nBelow2Test, 
-                     idNonTest = idBelow2NonTest, 
+mcoKnnBelow2$setData(dfMeta = dfBelow2Meta,
+                     dfAll = select(dfSmoothBelow2, -idOriginal),
+                     dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal),
+                     dfTest = select(dfSmoothBelow2Test, -idOriginal),
+                     nNonTest = nBelow2NonTest,
+                     nTest = nBelow2Test,
+                     idNonTest = idBelow2NonTest,
                      idTest = idBelow2Test)
 mcoKnnBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKnnBelow2$setClassifier('knn')
+# hyperparChoice = 1:6
 tic()
-mcoKnnBelow2$cvClassifier(iter = 5, hyperparChoice = 1:2, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm) 
+mcoKnnBelow2$cvClassifier(iter = 100, hyperparChoice = 1:round((nBelow2/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm)
 toc()
 mcoKnnBelow2$runOnTestSet(t = time, metric = LpNorm)
 
-save(mcoKnnBelow2, file = 'mcoKnnBelow2.RData')
-
+# save(mcoKnnBelow2, file = 'mcoKnnBelow2.RData')
+load('mcoKnnBelow2.RData')
 
 
 
@@ -64,18 +66,15 @@ mcoFnweBelow2$setData(dfMeta = dfBelow2Meta,
                       idTest = idBelow2Test)
 mcoFnweBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFnweBelow2$setClassifier('fnwe')
-# tic()
-# mcoFnweBelow2$cvClassifier(iter = 80, hyperparChoice = c(18, 45, 56, 78, 111, 117, 134, 163, 175, 263), 
-#                      nCore = 4, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
-# toc()
 tic()
-mcoFnweBelow2$cvClassifier(iter = 5, hyperparChoice = 1:2, 
-                     nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
+# hyperparChoice = 1:5
+mcoFnweBelow2$cvClassifier(iter = 100, hyperparChoice = 1:100, 
+                           nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
 toc()
 mcoFnweBelow2$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
 
 save(mcoFnweBelow2, file = 'mcoFnweBelow2.RData')
-
+# load('mcoFnweBelow2.RData')
 
 
 
@@ -83,22 +82,24 @@ save(mcoFnweBelow2, file = 'mcoFnweBelow2.RData')
 # Functional kernel rule
 set.seed(1)
 mcoKernelRuleBelow2 = mlFramework$new()
-mcoKernelRuleBelow2$setData(dfMeta = dfBelow2Meta, 
-                            dfAll = select(dfSmoothBelow2, -idOriginal), 
-                            dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal), 
-                            dfTest = select(dfSmoothBelow2Test, -idOriginal), 
-                            nNonTest = nBelow2NonTest, 
-                            nTest = nBelow2Test, 
-                            idNonTest = idBelow2NonTest, 
+mcoKernelRuleBelow2$setData(dfMeta = dfBelow2Meta,
+                            dfAll = select(dfSmoothBelow2, -idOriginal),
+                            dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal),
+                            dfTest = select(dfSmoothBelow2Test, -idOriginal),
+                            nNonTest = nBelow2NonTest,
+                            nTest = nBelow2Test,
+                            idNonTest = idBelow2NonTest,
                             idTest = idBelow2Test)
 mcoKernelRuleBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRuleBelow2$setClassifier('kernelRule')
+# hyperparChoice = 1:3
 tic()
-mcoKernelRuleBelow2$cvClassifier(iter = 5, hyperparChoice = 1:2, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
+mcoKernelRuleBelow2$cvClassifier(iter = 100, hyperparChoice = 1:100, nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian')
 toc()
 mcoKernelRuleBelow2$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
 
-save(mcoKernelRuleBelow2, file = 'mcoKernelRuleBelow2.RData')
+# save(mcoKernelRuleBelow2, file = 'mcoKernelRuleBelow2.RData')
+load('mcoKernelRuleBelow2.RData')
 
 
 
@@ -107,13 +108,13 @@ save(mcoKernelRuleBelow2, file = 'mcoKernelRuleBelow2.RData')
 # Functional GLM
 set.seed(1)
 mcoFglmBelow2 = mlFramework$new()
-mcoFglmBelow2$setData(dfMeta = dfBelow2Meta, 
-                      dfAll = select(dfSmoothBelow2, -idOriginal), 
-                      dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal), 
-                      dfTest = select(dfSmoothBelow2Test, -idOriginal), 
-                      nNonTest = nBelow2NonTest, 
-                      nTest = nBelow2Test, 
-                      idNonTest = idBelow2NonTest, 
+mcoFglmBelow2$setData(dfMeta = dfBelow2Meta,
+                      dfAll = select(dfSmoothBelow2, -idOriginal),
+                      dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal),
+                      dfTest = select(dfSmoothBelow2Test, -idOriginal),
+                      nNonTest = nBelow2NonTest,
+                      nTest = nBelow2Test,
+                      idNonTest = idBelow2NonTest,
                       idTest = idBelow2Test)
 mcoFglmBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFglmBelow2$setClassifier('fglm')
@@ -123,30 +124,56 @@ mcoFglmBelow2$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.99, ex
 toc()
 mcoFglmBelow2$runOnTestSet(t = time)
 
-save(mcoFglmBelow2, file = 'mcoFglmBelow2.RData')
+# save(mcoFglmBelow2, file = 'mcoFglmBelow2.RData')
+load('mcoFglmBelow2.RData')
 
 
 
 # Functional SVM
 set.seed(1)
 mcoFSvmBelow2 = mlFramework$new()
-mcoFSvmBelow2$setData(dfMeta = dfBelow2Meta, 
-                      dfAll = select(dfSmoothBelow2, -idOriginal), 
-                      dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal), 
-                      dfTest = select(dfSmoothBelow2Test, -idOriginal), 
-                      nNonTest = nBelow2NonTest, 
-                      nTest = nBelow2Test, 
-                      idNonTest = idBelow2NonTest, 
+mcoFSvmBelow2$setData(dfMeta = dfBelow2Meta,
+                      dfAll = select(dfSmoothBelow2, -idOriginal),
+                      dfNonTest = select(dfSmoothBelow2NonTest, -idOriginal),
+                      dfTest = select(dfSmoothBelow2Test, -idOriginal),
+                      nNonTest = nBelow2NonTest,
+                      nTest = nBelow2Test,
+                      idNonTest = idBelow2NonTest,
                       idTest = idBelow2Test)
 mcoFSvmBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFSvmBelow2$setClassifier('fSvm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
-svmParChoice = list('gamma' = 1:5, 
-                    'cost' = 1:20)
-mcoFSvmBelow2$cvClassifier(iter = 10, hyperparChoice = svmParChoice, nCore = 5, trainingPct = 0.6, 
-                     t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE, kernelChoice = 'radial')
+# hyperparChoice: gamma = c(0.2, 0.3, 0.5, 0.9), cost not significant here
+svmParChoice = list('gamma' = c(seq(0.1, 0.9, 0.1), 1:10),
+                    'cost' = 1:5)
+mcoFSvmBelow2$cvClassifier(iter = 100, hyperparChoice = svmParChoice, nCore = nCore, trainingPct = 0.6,
+                           t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE, kernelChoice = 'radial')
 toc()
 mcoFSvmBelow2$runOnTestSet(t = time)
 
-save(mcoFSvmBelow2, file = 'mcoFSvmBelow2.R')
+# save(mcoFSvmBelow2, file = 'mcoFSvmBelow2.RData')
+load('mcoFSvmBelow2.RData')
+
+
+
+
+
+# Collect results from all classification methods
+accuracyValidation = c(mcoKnnBelow2$accuracyValidation, 
+                       mcoFnweBelow2$accuracyValidation, 
+                       mcoKernelRuleBelow2$accuracyValidation, 
+                       mcoFglmBelow2$accuracyValidation, 
+                       mcoFSvmBelow2$accuracyValidation)
+accuracyPrediction = c(mcoKnnBelow2$accuracyPrediction, 
+                       mcoFnweBelow2$accuracyPrediction, 
+                       mcoKernelRuleBelow2$accuracyPrediction, 
+                       mcoFglmBelow2$accuracyPrediction, 
+                       mcoFSvmBelow2$accuracyPrediction)
+classificationMethods = c('fKNN', 'fNWE', 'fKR', 'fGLM', 'fSVM')
+performanceSmoothedBelow2 = data.frame('methods' = classificationMethods, 
+                                       accuracyValidation = accuracyValidation, 
+                                       accuracyTest = accuracyPrediction)
+
+# library(xtable)
+# xtable(performanceSmoothedBelow2)

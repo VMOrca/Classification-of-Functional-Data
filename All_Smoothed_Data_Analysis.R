@@ -4,6 +4,9 @@ setwd('D:/Academics/UNSW/Thesis/R/MCO/')
 
 source('Data_Preparation.R')
 
+nCore = 5
+n = dim(dfSmooth)[1]
+idAll = unique(dfSmooth$id)
 
 
 # Divide all subjects to traing/validation/test sets
@@ -24,25 +27,24 @@ nValidation = n * 0.2
 # Functional knn
 set.seed(1)
 mcoKnn = mlFramework$new()
-mcoKnn$setData(dfMeta = dfMeta, 
-               dfAll = select(dfSmooth, -idOriginal), 
-               dfNonTest = select(dfSmoothNonTest, -idOriginal), 
-               dfTest = select(dfSmoothTest, -idOriginal), 
-               nNonTest = nNonTest, 
-               nTest = nTest, 
-               idNonTest = idNonTest, 
+mcoKnn$setData(dfMeta = dfMeta,
+               dfAll = select(dfSmooth, -idOriginal),
+               dfNonTest = select(dfSmoothNonTest, -idOriginal),
+               dfTest = select(dfSmoothTest, -idOriginal),
+               nNonTest = nNonTest,
+               nTest = nTest,
+               idNonTest = idNonTest,
                idTest = idTest)
 mcoKnn$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKnn$setClassifier('knn')
+# hyperparChoice: 3:9
 tic()
-mcoKnn$cvClassifier(iter = 100, hyperparChoice = 1:round((n/2)), nCore = 10, trainingPct = 0.6, t = time, metric = LpNorm) 
-toc()
-tic()
-mcoKnn$cvClassifier(iter = 5, hyperparChoice = 1:2, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm) 
+mcoKnn$cvClassifier(iter = 100, hyperparChoice = 1:round((n/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm)
 toc()
 mcoKnn$runOnTestSet(t = time, metric = LpNorm)
 
-save(mcoKnn, file = 'mcoKnn.RData')
+# save(mcoKnn, file = 'mcoKnn.RData')
+load('mcoKnn.RData')
 
 
 
@@ -50,28 +52,25 @@ save(mcoKnn, file = 'mcoKnn.RData')
 # Functional Nadaraya-Watson estimator
 set.seed(1)
 mcoFnwe = mlFramework$new()
-mcoFnwe$setData(dfMeta = dfMeta, 
-                dfAll = select(dfSmooth, -idOriginal), 
-                dfNonTest = select(dfSmoothNonTest, -idOriginal), 
-                dfTest = select(dfSmoothTest, -idOriginal), 
-                nNonTest = nNonTest, 
-                nTest = nTest, 
-                idNonTest = idNonTest, 
+mcoFnwe$setData(dfMeta = dfMeta,
+                dfAll = select(dfSmooth, -idOriginal),
+                dfNonTest = select(dfSmoothNonTest, -idOriginal),
+                dfTest = select(dfSmoothTest, -idOriginal),
+                nNonTest = nNonTest,
+                nTest = nTest,
+                idNonTest = idNonTest,
                 idTest = idTest)
 mcoFnwe$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFnwe$setClassifier('fnwe')
-# tic()
-# mcoFnwe$cvClassifier(iter = 80, hyperparChoice = c(18, 45, 56, 78, 111, 117, 134, 163, 175, 263), 
-#                      nCore = 4, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
-# toc()
+# hyperparChoice = 1:5
 tic()
-mcoFnwe$cvClassifier(iter = 50, hyperparChoice = 1:150, 
-                     nCore = 10, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
+mcoFnwe$cvClassifier(iter = 100, hyperparChoice = 1:5,
+                     nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian')
 toc()
 mcoFnwe$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
 
-save(mcoFnwe, file = 'mcoFnwe.RData')
-
+# save(mcoFnwe, file = 'mcoFnwe.RData')
+load('mcoFnwe.RData')
 
 
 
@@ -79,23 +78,24 @@ save(mcoFnwe, file = 'mcoFnwe.RData')
 # Functional kernel rule
 set.seed(1)
 mcoKernelRule = mlFramework$new()
-mcoKernelRule$setData(dfMeta = dfMeta, 
-                      dfAll = select(dfSmooth, -idOriginal), 
-                      dfNonTest = select(dfSmoothNonTest, -idOriginal), 
-                      dfTest = select(dfSmoothTest, -idOriginal), 
-                      nNonTest = nNonTest, 
-                      nTest = nTest, 
-                      idNonTest = idNonTest, 
+mcoKernelRule$setData(dfMeta = dfMeta,
+                      dfAll = select(dfSmooth, -idOriginal),
+                      dfNonTest = select(dfSmoothNonTest, -idOriginal),
+                      dfTest = select(dfSmoothTest, -idOriginal),
+                      nNonTest = nNonTest,
+                      nTest = nTest,
+                      idNonTest = idNonTest,
                       idTest = idTest)
 mcoKernelRule$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRule$setClassifier('kernelRule')
+# hyperparChoice = 1:5
 tic()
-mcoKernelRule$cvClassifier(iter = 10, hyperparChoice = 1:100, nCore = 5, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
+mcoKernelRule$cvClassifier(iter = 100, hyperparChoice = 1:100, nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian')
 toc()
 mcoKernelRule$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
 
-save(mcoKernelRule, file = 'mcoKernelRule.RData')
-
+# save(mcoKernelRule, file = 'mcoKernelRule.RData')
+load('mcoKernelRule.RData')
 
 
 
@@ -104,13 +104,13 @@ save(mcoKernelRule, file = 'mcoKernelRule.RData')
 # Functional GLM
 set.seed(1)
 mcoFglm = mlFramework$new()
-mcoFglm$setData(dfMeta = dfMeta, 
-                dfAll = select(dfSmooth, -idOriginal), 
-                dfNonTest = select(dfSmoothNonTest, -idOriginal), 
-                dfTest = select(dfSmoothTest, -idOriginal), 
-                nNonTest = nNonTest, 
-                nTest = nTest, 
-                idNonTest = idNonTest, 
+mcoFglm$setData(dfMeta = dfMeta,
+                dfAll = select(dfSmooth, -idOriginal),
+                dfNonTest = select(dfSmoothNonTest, -idOriginal),
+                dfTest = select(dfSmoothTest, -idOriginal),
+                nNonTest = nNonTest,
+                nTest = nTest,
+                idNonTest = idNonTest,
                 idTest = idTest)
 mcoFglm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFglm$setClassifier('fglm')
@@ -120,8 +120,8 @@ mcoFglm$trainClassifier(trainingPct = 0.6, t = time, proportion = 0.99, expansio
 toc()
 mcoFglm$runOnTestSet(t = time)
 
-save(mcoFglm, file = 'mcoFglm.RData')
-
+# save(mcoFglm, file = 'mcoFglm.RData')
+load('mcoFglm.RData')
 
 
 
@@ -129,23 +129,47 @@ save(mcoFglm, file = 'mcoFglm.RData')
 # Functional SVM
 set.seed(1)
 mcoFSvm = mlFramework$new()
-mcoFSvm$setData(dfMeta = dfMeta, 
-                dfAll = select(dfSmooth, -idOriginal), 
-                dfNonTest = select(dfSmoothNonTest, -idOriginal), 
-                dfTest = select(dfSmoothTest, -idOriginal), 
-                nNonTest = nNonTest, 
-                nTest = nTest, 
-                idNonTest = idNonTest, 
+mcoFSvm$setData(dfMeta = dfMeta,
+                dfAll = select(dfSmooth, -idOriginal),
+                dfNonTest = select(dfSmoothNonTest, -idOriginal),
+                dfTest = select(dfSmoothTest, -idOriginal),
+                nNonTest = nNonTest,
+                nTest = nTest,
+                idNonTest = idNonTest,
                 idTest = idTest)
 mcoFSvm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFSvm$setClassifier('fSvm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
-svmParChoice = list('gamma' = 1:5, 
-                    'cost' = 1:20)
-mcoFSvm$cvClassifier(iter = 10, hyperparChoice = svmParChoice, nCore = 5, trainingPct = 0.6, 
+# hyperparChoice: gamma = c(6, 0.6, 2, 4, 5), cost not very significant
+svmParChoice = list('gamma' = c(seq(0.1, 0.9, 0.1), 1:50),
+                    'cost' = 1:50)
+mcoFSvm$cvClassifier(iter = 100, hyperparChoice = svmParChoice, nCore = nCore, trainingPct = 0.6,
                      t = time, proportion = 0.99, expansion = 'kl', zeroMeanBool = TRUE, kernelChoice = 'radial')
 toc()
 mcoFSvm$runOnTestSet(t = time)
 
-save(mcoFSvm, file = 'mcoFSvm.R')
+# save(mcoFSvm, file = 'mcoFSvm.RData')
+load('mcoFSvm.RData')
+
+
+
+
+
+# Collect results from all classification methods
+accuracyValidation = c(mcoKnn$accuracyValidation, 
+                       mcoFnwe$accuracyValidation, 
+                       mcoKernelRule$accuracyValidation, 
+                       mcoFglm$accuracyValidation, 
+                       mcoFSvm$accuracyValidation)
+accuracyPrediction = c(mcoKnn$accuracyPrediction, 
+                       mcoFnwe$accuracyPrediction, 
+                       mcoKernelRule$accuracyPrediction, 
+                       mcoFglm$accuracyPrediction, 
+                       mcoFSvm$accuracyPrediction)
+classificationMethods = c('fKNN', 'fNWE', 'fKR', 'fGLM', 'fSVM')
+performanceSmoothed = data.frame('methods' = classificationMethods, 
+                                 accuracyValidation = accuracyValidation, 
+                                 accuracyTest = accuracyPrediction)
+# library(xtable)
+# xtable(performanceSmoothed)
