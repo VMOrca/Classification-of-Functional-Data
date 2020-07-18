@@ -1,7 +1,7 @@
 # Function to compute functional Nadaraya-Watson's estimator
 # kernelChoice: asymmetric kernel function
 # h: bandwidth
-# metric: metric to be used, e.g. LpNorm
+# metric: metric to be used, e.g. 'LpNorm'
 # y = label for training data, must be vector
 # x = training data, must be matrix
 # xNew = validation or test data, must be matrix
@@ -43,7 +43,13 @@ kernelRule = function(kernelChoice, h, metric, y, x, xNew, ...) {
   for (i in 1:n) {
     for (j in 1:m) {
       f = as.vector(x[i, ] - xNew[j, ], mode = 'numeric')
-      d[i, j] = metric(x = f, ...)
+      switch(metric, 
+             LpNorm = {
+               d[i, j] = LpNorm(x = f, ...)
+             }, 
+             supNorm = {
+               d[i, j] = supNorm(x = f)
+             })
     }
   }
   
@@ -85,5 +91,5 @@ kernelRule = function(kernelChoice, h, metric, y, x, xNew, ...) {
 #             y = dfUnSmoothNonTest$label,
 #             xNew = select(dfUnSmoothTest, -label, -idOriginal, -id),
 #             h = 2,
-#             metric = LpNorm,
+#             metric = 'LpNorm',
 #             kernelChoice = 'gaussian')
