@@ -39,9 +39,9 @@ mcoKnn$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKnn$setClassifier('knn')
 # hyperparChoice: 3:9
 tic()
-mcoKnn$cvClassifier(iter = 100, hyperparChoice = 1:round((n/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm)
+mcoKnn$cvClassifier(iter = 100, hyperparChoice = 1:round((n/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = 'LpNorm')
 toc()
-mcoKnn$runOnTestSet(t = time, metric = LpNorm)
+mcoKnn$runOnTestSet(t = time, metric = 'LpNorm')
 
 # save(mcoKnn, file = 'mcoKnn.RData')
 load('mcoKnn.RData')
@@ -65,9 +65,9 @@ mcoFnwe$setClassifier('fnwe')
 # hyperparChoice = 1:5
 tic()
 mcoFnwe$cvClassifier(iter = 100, hyperparChoice = 1:5,
-                     nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian')
+                     nCore = nCore, trainingPct = 0.6, t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 toc()
-mcoFnwe$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoFnwe$runOnTestSet(t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 
 # save(mcoFnwe, file = 'mcoFnwe.RData')
 load('mcoFnwe.RData')
@@ -90,9 +90,10 @@ mcoKernelRule$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRule$setClassifier('kernelRule')
 # hyperparChoice = 1:5
 tic()
-mcoKernelRule$cvClassifier(iter = 100, hyperparChoice = 1:100, nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoKernelRule$cvClassifier(iter = 100, hyperparChoice = 1:100, 
+                           nCore = nCore, trainingPct = 0.6, t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 toc()
-mcoKernelRule$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoKernelRule$runOnTestSet(t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 
 # save(mcoKernelRule, file = 'mcoKernelRule.RData')
 load('mcoKernelRule.RData')

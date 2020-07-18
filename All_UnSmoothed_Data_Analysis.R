@@ -39,9 +39,9 @@ mcoUnSmoothKnn$setData(dfMeta = dfMeta,
 mcoUnSmoothKnn$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothKnn$setClassifier('knn')
 tic()
-mcoUnSmoothKnn$cvClassifier(iter = 100, hyperparChoice = 3:9, nCore = ncore, trainingPct = 0.6, t = time, metric = LpNorm) 
+mcoUnSmoothKnn$cvClassifier(iter = 100, hyperparChoice = 3:9, nCore = ncore, trainingPct = 0.6, t = time, metric = 'LpNorm') 
 toc()
-mcoUnSmoothKnn$runOnTestSet(t = time, metric = LpNorm)
+mcoUnSmoothKnn$runOnTestSet(t = time, metric = 'LpNorm')
 
 # save(mcoUnSmoothKnn, file = 'mcoUnSmoothKnn.RData')
 load('mcoUnSmoothKnn.RData')
@@ -63,9 +63,9 @@ mcoUnSmoothFnwe$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothFnwe$setClassifier('fnwe')
 tic()
 mcoUnSmoothFnwe$cvClassifier(iter = 100, hyperparChoice = 1:5, 
-                             nCore = ncore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
+                             nCore = ncore, trainingPct = 0.6, t = time, metric = 'LpNorm', kernelChoice = 'gaussian') 
 toc()
-mcoUnSmoothFnwe$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoUnSmoothFnwe$runOnTestSet(t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 
 # save(mcoUnSmoothFnwe, file = 'mcoUnSmoothFnwe.RData')
 load('mcoUnSmoothFnwe.RData')
@@ -87,9 +87,10 @@ mcoUnSmoothKernelRule$setData(dfMeta = dfMeta,
 mcoUnSmoothKernelRule$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothKernelRule$setClassifier('kernelRule')
 tic()
-mcoUnSmoothKernelRule$cvClassifier(iter = 100, hyperparChoice = 1:5, nCore = ncore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
+mcoUnSmoothKernelRule$cvClassifier(iter = 100, hyperparChoice = 1:5, 
+                                   nCore = ncore, trainingPct = 0.6, t = time, metric = 'LpNorm', kernelChoice = 'gaussian') 
 toc()
-mcoUnSmoothKernelRule$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoUnSmoothKernelRule$runOnTestSet(t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 
 # save(mcoUnSmoothKernelRule, file = 'mcoUnSmoothKernelRule.RData')
 load('mcoUnSmoothKernelRule.RData')

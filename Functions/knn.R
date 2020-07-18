@@ -4,19 +4,25 @@
 # xNew: new observations - must be a matrix
 # t: domain of x
 # k: hyperparameter
-knn = function(x, t, y, xNew, k, metric = LpNorm) {
+knn = function(x, t, y, xNew, k, metric = 'LpNorm') {
   n = dim(x)[1]
   m = dim(xNew)[1]
-  metric = matrix(rep(NA, n * m), nrow = n)
+  metricValue = matrix(rep(NA, n * m), nrow = n)
   neighbourOfXNew = matrix(rep(NA, k * m), nrow = k)
   yPred = rep(NA, m)
   yProbList = list()
   for (j in 1:m) {
     for (i in 1:n) {
-      metric[i, j] = LpNorm(as.vector(x[i, ] - xNew[j, ], mode = 'numeric'), t, p = 2)
+      switch(metric, 
+             LpNorm = {
+               metricValue[i, j] = LpNorm(as.vector(x[i, ] - xNew[j, ], mode = 'numeric'), t, p = 2)
+             }, 
+             supNorm = {
+               metricValue[i, j] = supNorm(as.vector(x[i, ] - xNew[j, ], mode = 'numeric'))
+             })
     }
-    neighbourOfXNew[, j] =  sort(metric[, j])[1:k]
-    yInSmallBall = y[which(metric[, j] %in% neighbourOfXNew[, j])]
+    neighbourOfXNew[, j] =  sort(metricValue[, j])[1:k]
+    yInSmallBall = y[which(metricValue[, j] %in% neighbourOfXNew[, j])]
     yPred[j] = names(sort(-table(yInSmallBall)))[1]
     yProbList[[j]] = table(yInSmallBall)/length(yInSmallBall)
   }

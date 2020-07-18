@@ -150,7 +150,7 @@ mlFramework = R6Class(
         
         for (k in 1:length(hyperparChoice)) {
           accuracyWithinIter = foreach(i = 1:iter, .combine = 'c',  #.options.snow = opts, 
-                                       .export = c('LpNorm', 'knn', 'fnwe', 'kernelRule'), .packages = c('R6', 'dplyr')) %dopar% {
+                                       .export = c('LpNorm', 'knn', 'fnwe', 'kernelRule', 'supNorm'), .packages = c('R6', 'dplyr')) %dopar% {
              idTraining = sort(sample(dfNonTest$id, nAll * trainingPct))
              idValidation = dfNonTest$id[!dfNonTest$id %in% idTraining]
              dfTraining = dplyr::filter(dfNonTest, id %in% idTraining)

@@ -44,9 +44,9 @@ mcoKnnBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKnnBelow2$setClassifier('knn')
 # hyperparChoice = 1:6
 tic()
-mcoKnnBelow2$cvClassifier(iter = 100, hyperparChoice = 1:round((nBelow2/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm)
+mcoKnnBelow2$cvClassifier(iter = 100, hyperparChoice = 1:round((nBelow2/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = 'LpNorm')
 toc()
-mcoKnnBelow2$runOnTestSet(t = time, metric = LpNorm)
+mcoKnnBelow2$runOnTestSet(t = time, metric = 'LpNorm')
 
 # save(mcoKnnBelow2, file = 'mcoKnnBelow2.RData')
 load('mcoKnnBelow2.RData')
@@ -69,9 +69,9 @@ mcoFnweBelow2$setClassifier('fnwe')
 tic()
 # hyperparChoice = 1:5
 mcoFnweBelow2$cvClassifier(iter = 100, hyperparChoice = 1:100, 
-                           nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian') 
+                           nCore = nCore, trainingPct = 0.6, t = time, metric = 'LpNorm', kernelChoice = 'gaussian') 
 toc()
-mcoFnweBelow2$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoFnweBelow2$runOnTestSet(t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 
 save(mcoFnweBelow2, file = 'mcoFnweBelow2.RData')
 # load('mcoFnweBelow2.RData')
@@ -94,9 +94,10 @@ mcoKernelRuleBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRuleBelow2$setClassifier('kernelRule')
 # hyperparChoice = 1:3
 tic()
-mcoKernelRuleBelow2$cvClassifier(iter = 100, hyperparChoice = 1:100, nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoKernelRuleBelow2$cvClassifier(iter = 100, hyperparChoice = 1:100, 
+                                 nCore = nCore, trainingPct = 0.6, t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 toc()
-mcoKernelRuleBelow2$runOnTestSet(t = time, metric = LpNorm, kernelChoice = 'gaussian')
+mcoKernelRuleBelow2$runOnTestSet(t = time, metric = 'LpNorm', kernelChoice = 'gaussian')
 
 # save(mcoKernelRuleBelow2, file = 'mcoKernelRuleBelow2.RData')
 load('mcoKernelRuleBelow2.RData')
