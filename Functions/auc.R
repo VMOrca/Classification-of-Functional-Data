@@ -4,15 +4,20 @@
 #
 #########################################################################################################################################
 
-# Function to calculate supremum norm in Hilbert spaces, i.e. ||x||_\infty = sup(|x(t)|)
+# Numerical integral using Trapezoidal rule: \int x(t) dt
 # Input:
-#   - x [array] : value of x at each t
+#   - x [array] : integrand
+#   - t [array] : domain of x
 
-supNorm = function(x) {
-  out = max(abs(x))
-  return (out)
+auc = function(x, t) {
+  trapezoidT = diff(t)
+  trapezoidX = c(x[1] + x[2], diff(cumsum(x), lag = 2))
+  area = sum(trapezoidT * trapezoidX/2)
+  return (area)
 }
 
+
 # Example
-# x <- seq(0, pi, len = 101)
-# supNorm(x)
+x = c(1, 2, 3)
+t = 0:2
+auc(x = x, t = t)

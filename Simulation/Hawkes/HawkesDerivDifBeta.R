@@ -1,4 +1,14 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
+# Script to run data analysis for 1st derivative of the intensity process (of the Hawkes process)
+# You will need to change the directories below to your local ones
 options(stringsAsFactors = FALSE)
+# How many cores for parallel computing
+nCore = 5
 
 library(R6)
 library(fda.usc)
@@ -10,8 +20,7 @@ library(doSNOW)
 library(tictoc)
 library(e1071)
 
-
-setwd('D:/Academics/UNSW/Thesis/R/MCO/')
+setwd('D:/Academics/UNSW/Thesis/R/Git/')
 source('Functions/fglm.R')
 source('Functions/fglmPred.R')
 source('Functions/fnwe.R')
@@ -19,7 +28,7 @@ source('Functions/fpca.R')
 source('Functions/karhunenLoeve.R')
 source('Functions/kernelRule.R')
 source('Functions/knn.R')
-source('Functions/L2InnerProduct.R')
+source('Functions/auc.R')
 source('Functions/LpNorm.R')
 source('Functions/supNorm.R')
 source('Functions/multipleKarhunenLoeve.R')
@@ -28,16 +37,10 @@ source('Functions/cvFSvm.R')
 source('Functions/fSvmPred.R')
 
 
+source('D:/Academics/UNSW/Thesis/R/Git/Simulation/Simulation.R')
+setwd('D:/Academics/UNSW/Thesis/R/Git/Simulation/Hawkes/')
 
-
-source('D:/Academics/UNSW/Thesis/R/Simulation/Simulation.R')
-setwd('D:/Academics/UNSW/Thesis/R/Simulation/Hawkes/')
-
-
-nCore = 5
-
-
-
+#########################################################################################################################################
 # Derive 1st derivative from dfHawkes, store the result in dataframe dfHawkesDeriv
 dfHawkesReading = select(dfHawkes, -id, -label)
 dfMeta = select(dfHawkes, id, label)
@@ -62,14 +65,14 @@ t = as.numeric(colnames(select(dfHawkesDeriv, -id, -label)))
 # t = as.numeric(colnames(select(dfHawkesDeriv, -id, -label)))
 # xMin = min(min(hawkes0, hawkes1))
 # xMax = max(max(hawkes0, hawkes1))
-# plotHawkes(t = t, HawkesSample = hawkes0, xMin = xMin, xMax = xMax, 
+# plotHawkes(t = t, HawkesSample = hawkes0, xMin = xMin, xMax = xMax,
 #            title = paste('1st Derivative of Intensity Process of a Hawkes Process\n (alpha = ', 2, ', beta = ', 20, ')', sep = ''))
-# plotHawkes(t = t, HawkesSample = hawkes1, xMin = xMin, xMax = xMax, 
+# plotHawkes(t = t, HawkesSample = hawkes1, xMin = xMin, xMax = xMax,
 #            title = paste('1st Derivative of Intensity Process of a Hawkes Process\n (alpha = ', 2, ', beta = ', 25, ')', sep = ''))
 
 
 
-
+#########################################################################################################################################
 nHawkesDeriv = dim(dfHawkesDeriv)[1]
 idHawkesDerivAll = unique(dfHawkesDeriv$id)
 
@@ -101,7 +104,6 @@ HawkesDerivKnn$setData(dfMeta = dfMeta,
                        nTest = nHawkesDerivTest, 
                        idNonTest = idHawkesDerivNonTest, 
                        idTest = idHawkesDerivTest)
-HawkesDerivKnn$setWd('D:/Academics/UNSW/Thesis/R/Simulation/Hawkes/')
 HawkesDerivKnn$setClassifier('knn')
 tic()
 HawkesDerivKnn$cvClassifier(iter = 10, hyperparChoice = 1:round((nHawkesDerivNonTest/10)), nCore = nCore, trainingPct = 0.6, t = t, metric = 'LpNorm')
@@ -128,7 +130,6 @@ HawkesDerivFnwe$setData(dfMeta = dfMeta,
                         nTest = nHawkesDerivTest,
                         idNonTest = idHawkesDerivNonTest,
                         idTest = idHawkesDerivTest)
-HawkesDerivFnwe$setWd('D:/Academics/UNSW/Thesis/R/Simulation/Hawkes/')
 HawkesDerivFnwe$setClassifier('fnwe')
 # hyperparChoice = seq(0.4, 0.9, 0.1)
 tic()
@@ -156,7 +157,6 @@ HawkesDerivKernelRule$setData(dfMeta = dfMeta,
                               nTest = nHawkesDerivTest,
                               idNonTest = idHawkesDerivNonTest,
                               idTest = idHawkesDerivTest)
-HawkesDerivKernelRule$setWd('D:/Academics/UNSW/Thesis/R/Simulation/Hawkes/')
 HawkesDerivKernelRule$setClassifier('kernelRule')
 tic()
 # Try hyperparChoice = seq(0.55, 0.75, 0.01),
@@ -184,7 +184,6 @@ HawkesDerivFglm$setData(dfMeta = dfMeta,
                         nTest = nHawkesDerivTest,
                         idNonTest = idHawkesDerivNonTest,
                         idTest = idHawkesDerivTest)
-HawkesDerivFglm$setWd('D:/Academics/UNSW/Thesis/R/Simulation/Hawkes/')
 HawkesDerivFglm$setClassifier('fglm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -210,7 +209,6 @@ HawkesDerivFSvm$setData(dfMeta = dfMeta,
                         nTest = nHawkesDerivTest,
                         idNonTest = idHawkesDerivNonTest,
                         idTest = idHawkesDerivTest)
-HawkesDerivFSvm$setWd('D:/Academics/UNSW/Thesis/R/Simulation/Hawkes/')
 HawkesDerivFSvm$setClassifier('fSvm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -228,16 +226,16 @@ save(HawkesDerivFSvm, file = 'HawkesDerivFSvm.RData')
 
 
 
-# Load RData
-load('HawkesDerivKnn.RData')
-load('HawkesDerivFnwe.RData')
-load('HawkesDerivKernelRule.RData')
-load('HawkesDerivFglm.RData')
-load('HawkesDerivFSvm.RData')
-
-load('HawkesDerivSupNormKnn.RData')
-load('HawkesDerivSupNormFnwe.RData')
-load('HawkesDerivSupNormKernelRule.RData')
+# Load RData after completing all analysis above
+# load('HawkesDerivKnn.RData')
+# load('HawkesDerivFnwe.RData')
+# load('HawkesDerivKernelRule.RData')
+# load('HawkesDerivFglm.RData')
+# load('HawkesDerivFSvm.RData')
+# 
+# load('HawkesDerivSupNormKnn.RData')
+# load('HawkesDerivSupNormFnwe.RData')
+# load('HawkesDerivSupNormKernelRule.RData')
 
 
 # Collect results from all classification methods
@@ -256,5 +254,6 @@ performanceHawkesDeriv = data.frame('methods' = classificationMethods,
                                 accuracyValidation = accuracyValidation,
                                 accuracyTest = accuracyPrediction)
 
+# Convert to LaTeX table
 # library(xtable)
 # xtable(performanceHawkesDeriv)

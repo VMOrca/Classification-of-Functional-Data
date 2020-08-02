@@ -1,3 +1,11 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
+# R script to read MCO data and do data manipulation
+# You need to change the working directories below to your local ones
 options(stringsAsFactors = FALSE)
 
 library(R6)
@@ -11,7 +19,7 @@ library(tictoc)
 library(e1071)
 
 
-setwd('D:/Academics/UNSW/Thesis/R/MCO/')
+setwd('D:/Academics/UNSW/Thesis/R/Git/')
 source('Functions/fglm.R')
 source('Functions/fglmPred.R')
 source('Functions/fnwe.R')
@@ -19,7 +27,7 @@ source('Functions/fpca.R')
 source('Functions/karhunenLoeve.R')
 source('Functions/kernelRule.R')
 source('Functions/knn.R')
-source('Functions/L2InnerProduct.R')
+source('Functions/auc.R')
 source('Functions/LpNorm.R')
 source('Functions/multipleKarhunenLoeve.R')
 source('Functions/mlFramework.R')
@@ -28,7 +36,7 @@ source('Functions/fSvmPred.R')
 
 
 #=============================================================================================================
-
+# Extract useful MCO data
 data(MCO)
 dfX = MCO$permea$data %>% 
   as.data.frame() %>% 
@@ -82,8 +90,6 @@ for (i in 2:nTrt) {
 }
 
 #=============================================================================================================
-
-
 # Observation wiggly -> smoothing needed
 # Trial to see possible choices of bandwidth for kernel regression smoothing
 # x = df[1, columnIsTimeIndex]

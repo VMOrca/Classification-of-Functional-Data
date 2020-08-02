@@ -1,10 +1,24 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+# R script to analyse smoothed MCO data
 options(stringsAsFactors = FALSE)
 
-setwd('D:/Academics/UNSW/Thesis/R/MCO/')
-
+#########################################################################################################################################
+# Change hyperparameters here!
+#########################################################################################################################################
+setwd('D:/Academics/UNSW/Thesis/R/Git/MCO/')
 source('Data_Preparation.R')
-
+# How many cores for parallel computing
 nCore = 5
+
+
+
+
+
+#########################################################################################################################################
 n = dim(dfSmooth)[1]
 idAll = unique(dfSmooth$id)
 
@@ -35,9 +49,8 @@ mcoKnn$setData(dfMeta = dfMeta,
                nTest = nTest,
                idNonTest = idNonTest,
                idTest = idTest)
-mcoKnn$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKnn$setClassifier('knn')
-# hyperparChoice: 3:9
+# hyperparChoice = 3:9
 tic()
 mcoKnn$cvClassifier(iter = 100, hyperparChoice = 1:round((n/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = 'LpNorm')
 toc()
@@ -60,7 +73,6 @@ mcoFnwe$setData(dfMeta = dfMeta,
                 nTest = nTest,
                 idNonTest = idNonTest,
                 idTest = idTest)
-mcoFnwe$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFnwe$setClassifier('fnwe')
 # hyperparChoice = 1:5
 tic()
@@ -86,7 +98,6 @@ mcoKernelRule$setData(dfMeta = dfMeta,
                       nTest = nTest,
                       idNonTest = idNonTest,
                       idTest = idTest)
-mcoKernelRule$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRule$setClassifier('kernelRule')
 # hyperparChoice = 1:5
 tic()
@@ -113,7 +124,6 @@ mcoFglm$setData(dfMeta = dfMeta,
                 nTest = nTest,
                 idNonTest = idNonTest,
                 idTest = idTest)
-mcoFglm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFglm$setClassifier('fglm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -138,7 +148,6 @@ mcoFSvm$setData(dfMeta = dfMeta,
                 nTest = nTest,
                 idNonTest = idNonTest,
                 idTest = idTest)
-mcoFSvm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFSvm$setClassifier('fSvm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -172,5 +181,8 @@ classificationMethods = c('fKNN', 'fNWE', 'fKR', 'fGLM', 'fSVM')
 performanceSmoothed = data.frame('methods' = classificationMethods, 
                                  accuracyValidation = accuracyValidation, 
                                  accuracyTest = accuracyPrediction)
+
+
+# Convert to LaTeX table
 # library(xtable)
 # xtable(performanceSmoothed)

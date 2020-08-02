@@ -1,10 +1,22 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
 # Function to compute functional Nadaraya-Watson's estimator
-# kernelChoice: asymmetric kernel function
-# h: bandwidth
-# metric: metric to be used, e.g. 'LpNorm'
-# y = label for training data, must be vector
-# x = training data, must be matrix
-# xNew = validation or test data, must be matrix
+# Details: Section 4.2.1, 4.2.2
+# Input:
+#   - kernelChoice [char] : asymmetric kernel function, current supports c('box', 'triangle', 'quadratic', 'gaussian')
+#   - h [double] : bandwidth for kernel function
+#   - metric [char] : metric to be used, currently only supports c('LpNorm', 'supNorm')
+#   - y [array] : label for training data, must be vector
+#   - x [dataframe] : training data, must be datafrmae
+#   - xNew [dataframe] : validation or test data, must be datafrmae
+# Output: [list]
+#     - Label Prediction [array] : prediction of xNew. Dimension will be equal to dim(xNew)[1]
+#     - Probability [dataframe] : probability of each predicted value of xNew
+
 
 fnwe = function(kernelChoice, h, metric, y, x, xNew, ...) {
   # Check which kernel function to use
@@ -81,11 +93,16 @@ fnwe = function(kernelChoice, h, metric, y, x, xNew, ...) {
 }
 
 
-# out2 = fnwe(x = select(dfSmoothNonTest, -label, -idOriginal, -id), 
-#           t = time, 
-#           y = dfSmoothNonTest$label, 
-#           xNew = select(dfSmoothTest, -label, -idOriginal, -id)[1, ], 
-#           h = 20, 
-#           metric = 'LpNorm', 
-#           kernelChoice = 'gaussian')
 
+# library(tidyverse)
+# n = 10
+# df = data.frame(matrix(rnorm(100, 0, 1), nrow = n))
+# y = sample(0:1, n, replace = TRUE)
+# t = 1:dim(df)[2]
+# out = fnwe(x = df, 
+#            t = t,
+#            y = y,
+#            xNew = df,
+#            h = 1,
+#            metric = 'LpNorm',
+#            kernelChoice = 'gaussian')

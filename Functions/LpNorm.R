@@ -1,4 +1,15 @@
-# Function to calculate Lp norm in Hilbert spaces, i.e. ||f||_p = (\int |f(x)|^p dx)^(1/p)
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
+# Function to calculate Lp norm in Hilbert spaces, i.e. ||x||_p = (\int |x(t)|^p dt)^(1/p)
+# Input:
+#   - x [array] : integrand
+#   - t [array] : domain of x
+#   - p [int] : positive integer choosing which Lp norm to be used
+
 LpNorm = function(x, t, p = 2) {
   xP = abs(x)^p
   trapezoidT = diff(t)

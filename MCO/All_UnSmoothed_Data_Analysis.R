@@ -1,13 +1,28 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+# R script to analyse unsmoothed MCO data
 options(stringsAsFactors = FALSE)
 
-setwd('D:/Academics/UNSW/Thesis/R/MCO/')
-
+#########################################################################################################################################
+# Change hyperparameters here!
+#########################################################################################################################################
+setwd('D:/Academics/UNSW/Thesis/R/Git/MCO/')
 source('Data_Preparation.R')
+# How many cores for parallel computing
+nCore = 5
 
-ncore = 5
 
+
+
+
+#########################################################################################################################################
 dfUnSmooth = df
 names(dfUnSmooth) = names(dfSmooth)
+n = dim(dfUnSmooth)[1]
+idAll = unique(dfUnSmooth$id)
 
 # Divide all subjects to traing/validation/test sets
 # Test: 20% fixed subjects. Training/Validation: 60%/20% which will vary between the remaining subjects for each round of cross validation
@@ -36,7 +51,6 @@ mcoUnSmoothKnn$setData(dfMeta = dfMeta,
                nTest = nTest, 
                idNonTest = idNonTest, 
                idTest = idTest)
-mcoUnSmoothKnn$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothKnn$setClassifier('knn')
 tic()
 mcoUnSmoothKnn$cvClassifier(iter = 100, hyperparChoice = 3:9, nCore = ncore, trainingPct = 0.6, t = time, metric = 'LpNorm') 
@@ -59,7 +73,6 @@ mcoUnSmoothFnwe$setData(dfMeta = dfMeta,
                 nTest = nTest, 
                 idNonTest = idNonTest, 
                 idTest = idTest)
-mcoUnSmoothFnwe$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothFnwe$setClassifier('fnwe')
 tic()
 mcoUnSmoothFnwe$cvClassifier(iter = 100, hyperparChoice = 1:5, 
@@ -84,7 +97,6 @@ mcoUnSmoothKernelRule$setData(dfMeta = dfMeta,
                       nTest = nTest, 
                       idNonTest = idNonTest, 
                       idTest = idTest)
-mcoUnSmoothKernelRule$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothKernelRule$setClassifier('kernelRule')
 tic()
 mcoUnSmoothKernelRule$cvClassifier(iter = 100, hyperparChoice = 1:5, 
@@ -110,7 +122,6 @@ mcoUnSmoothFglm$setData(dfMeta = dfMeta,
                 nTest = nTest, 
                 idNonTest = idNonTest, 
                 idTest = idTest)
-mcoUnSmoothFglm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothFglm$setClassifier('fglm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -135,7 +146,6 @@ mcoUnSmoothFSvm$setData(dfMeta = dfMeta,
                 nTest = nTest, 
                 idNonTest = idNonTest, 
                 idTest = idTest)
-mcoUnSmoothFSvm$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoUnSmoothFSvm$setClassifier('fSvm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -171,5 +181,6 @@ performanceUnSmoothed = data.frame('methods' = classificationMethods,
                                    accuracyTest = accuracyPrediction)
 
 
-library(xtable)
-xtable(performanceUnSmoothed)
+# Convert to LaTeX table
+# library(xtable)
+# xtable(performanceUnSmoothed)

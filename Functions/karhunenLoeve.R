@@ -1,16 +1,27 @@
-# Function to compute Karhunen-Loeve expansion
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
+# Function to compute Karhunen-Loeve expansion (for single function only!)
 #                                      x(t) = \sum_{i = 1}^k <x, phi_k> phi_k(t)
+# Details: Section 3.2
 # Input:
-# - x: function to be approximated by Karhunen-Loeve expansion, must be in vector form (i.e. discretised function)
-# - sigma: cov_x(t_1, t_2), i.e. covariance function of x at each point t
-# - t: domain of x(t), must have the same dimension as x
-# - proportion \in [0, 1] which determines how many principal components (i.e. k) to be preserved
-# 
-# Output: 
-# - Inner product <x, phi_k> for all k
-# - Basis: truncated eigenvector of x
-# - no_eigen: number of eigenvalues preserved
-# - xApprox: approximated value of x at each point t
+#   - x [array] : function to be approximated by Karhunen-Loeve expansion, must be in vector form (i.e. discretised function)
+#   - sigma [matrix] : cov_x(t_1, t_2), i.e. discretised covariance function of x at each point t => hence a covariance matrix
+#   - t [array] : domain of x(t), must have the same dimension as x
+#   - proportion [double]: score of fPCA, which affects how many basis(eigenfunctions) to be preserved. Usually a high score is needed to
+#                          fully recover the original function
+#   - nBasis [int] : how many eigenfunctions to be preserved. It must be equal to the number of basis preserved in the model
+#                    We usually use proportion instead (i.e. set nBasis = NA), but if nBasis is given, then proportion will NOT be effective!
+# Output:
+#   - innerProduct [array] : Inner product <x, phi_k> for all k
+#   - Basis [dataframe] : truncated eigenvector of x. k-th column means the k-th basis
+#   - no_eigen [int] : number of eigenvalues preserved
+#   - xApprox [array] : approximated value of x at each point t using basis expansion
+
+
 karhunenLoeve = function(x, sigma, t, proportion, nBasis = NA) {
   pca = fpca(sigma, t, proportion, nBasis)
   eigenvector = pca$truncatedEigenvector
@@ -36,11 +47,10 @@ karhunenLoeve = function(x, sigma, t, proportion, nBasis = NA) {
 
 
 
-# x = select(dfSmoothNonTest, -idOriginal, -id, -label)
-# y = as.vector(x[1, ], mode = 'numeric')
-# b = karhunenLoeve(x = y, sigma = varNonTest, t = time, proportion = 0.999)
-# b$no_eigen
-# 
-# plot(t, y, type = 'l')
-# lines(t, b$xApprox, col = 2)
-
+# Example
+# n = 20
+# df = data.frame(matrix(rnorm(100, 0, 1), nrow = n))
+# y = sample(0:1, n, replace = TRUE)
+# t = 1:dim(df)[2]
+# sigma = var(df)
+# out = karhunenLoeve(x = as.vector(df[1, ], mode = 'numeric'), sigma = sigma, t, proportion, nBasis = NA)

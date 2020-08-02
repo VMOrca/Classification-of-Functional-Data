@@ -1,7 +1,11 @@
-# Assemble results
-# Needs to run all analysis beforehands
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
 
-
+# Script to Assemble all results
+# Needs to run all analysis beforehands and set your working directory before loading and .RData
 classificationMethods = c('fKNN', 'fNWE', 'fKR', 'fGLM', 'fSVM')
 
 # OU processes
@@ -19,7 +23,6 @@ OUDifSigma = c(OUDifSigmaKnn$accuracyPrediction,
                        OUDifSigmaFSvm$accuracyPrediction)
 
 # Hawkes Processes
-
 load('HawkesKnn.RData')
 load('HawkesFnwe.RData')
 load('HawkesKernelRule.RData')
@@ -87,7 +90,7 @@ mcoSmoothBelow2 = c(mcoKnnBelow2$accuracyPrediction,
                        mcoFSvmBelow2$accuracyPrediction)
 
 
-# Assemble to dataframe
+# Assemble all results to a dataframe
 dfPerformance = data.frame(OUDifMu, 
                            OUDifSigma, 
                            HawkesL2, 
@@ -100,5 +103,6 @@ dfPerformance = data.frame(OUDifMu,
 dfPerformance = t(dfPerformance)
 colnames(dfPerformance) = classificationMethods
 
+# Convert to LaTeX table
 # library(xtable)
-xtable(dfPerformance)
+# xtable(dfPerformance)

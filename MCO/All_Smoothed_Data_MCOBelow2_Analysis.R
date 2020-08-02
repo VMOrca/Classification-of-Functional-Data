@@ -1,15 +1,28 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+# R script to analyse smoothed data where MCO < 2
 options(stringsAsFactors = FALSE)
 
-setwd('D:/Academics/UNSW/Thesis/R/MCO/')
-
+#########################################################################################################################################
+# Change hyperparameters here!
+#########################################################################################################################################
+setwd('D:/Academics/UNSW/Thesis/R/Git/MCO/')
 source('Data_Preparation.R')
+# How many cores for parallel computing
+nCore = 5
 
 
+
+
+
+#########################################################################################################################################
 idAllBelow2 = unique(dfSmoothBelow2$id)
 nBelow2 = length(idAllBelow2)
 dfBelow2Meta = select(dfSmoothBelow2, id, label, idOriginal)
 
-nCore = 5
 
 # Divide all subjects to traing/validation/test sets
 # Test: 20% fixed subjects. Training/Validation: 60%/20% which will vary between the remaining subjects for each round of cross validation
@@ -40,7 +53,6 @@ mcoKnnBelow2$setData(dfMeta = dfBelow2Meta,
                      nTest = nBelow2Test,
                      idNonTest = idBelow2NonTest,
                      idTest = idBelow2Test)
-mcoKnnBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKnnBelow2$setClassifier('knn')
 # hyperparChoice = 1:6
 tic()
@@ -64,7 +76,6 @@ mcoFnweBelow2$setData(dfMeta = dfBelow2Meta,
                       nTest = nBelow2Test, 
                       idNonTest = idBelow2NonTest, 
                       idTest = idBelow2Test)
-mcoFnweBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFnweBelow2$setClassifier('fnwe')
 tic()
 # hyperparChoice = 1:5
@@ -90,7 +101,6 @@ mcoKernelRuleBelow2$setData(dfMeta = dfBelow2Meta,
                             nTest = nBelow2Test,
                             idNonTest = idBelow2NonTest,
                             idTest = idBelow2Test)
-mcoKernelRuleBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoKernelRuleBelow2$setClassifier('kernelRule')
 # hyperparChoice = 1:3
 tic()
@@ -117,7 +127,6 @@ mcoFglmBelow2$setData(dfMeta = dfBelow2Meta,
                       nTest = nBelow2Test,
                       idNonTest = idBelow2NonTest,
                       idTest = idBelow2Test)
-mcoFglmBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFglmBelow2$setClassifier('fglm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -141,7 +150,6 @@ mcoFSvmBelow2$setData(dfMeta = dfBelow2Meta,
                       nTest = nBelow2Test,
                       idNonTest = idBelow2NonTest,
                       idTest = idBelow2Test)
-mcoFSvmBelow2$setWd('D:/Academics/UNSW/Thesis/R/MCO/')
 mcoFSvmBelow2$setClassifier('fSvm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -176,5 +184,6 @@ performanceSmoothedBelow2 = data.frame('methods' = classificationMethods,
                                        accuracyValidation = accuracyValidation, 
                                        accuracyTest = accuracyPrediction)
 
+# Convert to LaTeX table
 # library(xtable)
 # xtable(performanceSmoothedBelow2)

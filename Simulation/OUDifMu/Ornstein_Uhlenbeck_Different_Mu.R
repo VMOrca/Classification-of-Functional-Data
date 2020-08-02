@@ -1,4 +1,14 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
+# Script to run data analysis for OU processes with different \mu
+# You will need to change the directories below to your local ones
 options(stringsAsFactors = FALSE)
+# How many cores for parallel computing
+nCore = 5
 
 library(R6)
 library(fda.usc)
@@ -10,8 +20,7 @@ library(doSNOW)
 library(tictoc)
 library(e1071)
 
-
-setwd('D:/Academics/UNSW/Thesis/R/MCO/')
+setwd('D:/Academics/UNSW/Thesis/R/Git/')
 source('Functions/fglm.R')
 source('Functions/fglmPred.R')
 source('Functions/fnwe.R')
@@ -19,7 +28,7 @@ source('Functions/fpca.R')
 source('Functions/karhunenLoeve.R')
 source('Functions/kernelRule.R')
 source('Functions/knn.R')
-source('Functions/L2InnerProduct.R')
+source('Functions/auc.R')
 source('Functions/LpNorm.R')
 source('Functions/supNorm.R')
 source('Functions/multipleKarhunenLoeve.R')
@@ -27,13 +36,10 @@ source('Functions/mlFramework.R')
 source('Functions/cvFSvm.R')
 source('Functions/fSvmPred.R')
 
+source('D:/Academics/UNSW/Thesis/R/Git/Simulation/Simulation.R')
+setwd('D:/Academics/UNSW/Thesis/R/Git/Simulation/OUDifMu/')
 
-
-
-source('D:/Academics/UNSW/Thesis/R/Simulation/Simulation.R')
-setwd('D:/Academics/UNSW/Thesis/R/Simulation/OUDifMu/')
-
-nCore = 5
+#########################################################################################################################################
 nOUDifMu = dim(dfOUDifMu)[1]
 idOUDifMuAll = unique(dfOUDifMu$id)
 dfMeta = select(dfOUDifMu, id, label)
@@ -67,7 +73,6 @@ OUDifMuKnn$setData(dfMeta = dfMeta,
                    nTest = nOUDifMuTest, 
                    idNonTest = idOUDifMuNonTest, 
                    idTest = idOUDifMuTest)
-OUDifMuKnn$setWd('D:/Academics/UNSW/Thesis/R/Simulation/OUDifMu/')
 OUDifMuKnn$setClassifier('knn')
 tic()
 # OUDifMuKnn$cvClassifier(iter = 100, hyperparChoice = 1:round((n/2)), nCore = nCore, trainingPct = 0.6, t = time, metric = LpNorm)
@@ -93,7 +98,6 @@ OUDifMuFnwe$setData(dfMeta = dfMeta,
                     nTest = nOUDifMuTest, 
                     idNonTest = idOUDifMuNonTest, 
                     idTest = idOUDifMuTest)
-OUDifMuFnwe$setWd('D:/Academics/UNSW/Thesis/R/Simulation/OUDifMu/')
 OUDifMuFnwe$setClassifier('fnwe')
 # hyperparChoice = seq(0.4, 0.9, 0.1)
 tic()
@@ -120,7 +124,6 @@ OUDifMuKernelRule$setData(dfMeta = dfMeta,
                           nTest = nOUDifMuTest, 
                           idNonTest = idOUDifMuNonTest, 
                           idTest = idOUDifMuTest)
-OUDifMuKernelRule$setWd('D:/Academics/UNSW/Thesis/R/Simulation/OUDifMu/')
 OUDifMuKernelRule$setClassifier('kernelRule')
 tic()
 # Try hyperparChoice = seq(0.55, 0.75, 0.01),
@@ -148,7 +151,6 @@ OUDifMuFglm$setData(dfMeta = dfMeta,
                 nTest = nOUDifMuTest, 
                 idNonTest = idOUDifMuNonTest, 
                 idTest = idOUDifMuTest)
-OUDifMuFglm$setWd('D:/Academics/UNSW/Thesis/R/Simulation/OUDifMu/')
 OUDifMuFglm$setClassifier('fglm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -174,7 +176,6 @@ OUDifMuFSvm$setData(dfMeta = dfMeta,
                     nTest = nOUDifMuTest, 
                     idNonTest = idOUDifMuNonTest, 
                     idTest = idOUDifMuTest)
-OUDifMuFSvm$setWd('D:/Academics/UNSW/Thesis/R/Simulation/OUDifMu/')
 OUDifMuFSvm$setClassifier('fSvm')
 tic()
 # Not sure why when zeroMeanBool = FALSE, the recovered function oscillate a lot => use zeroMeanBool = TRUE fow now
@@ -210,5 +211,6 @@ performanceOUDifMu = data.frame('methods' = classificationMethods,
                                  accuracyValidation = accuracyValidation, 
                                  accuracyTest = accuracyPrediction)
 
+# Convert to LaTeX table
 # library(xtable)
 # xtable(performanceOUDifMu)

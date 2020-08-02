@@ -1,8 +1,29 @@
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
 # Function to perform functional principal component analysis
-# - sigma: sample covariance matrix
-# - k: truncated eigenvalues up to k-th one
-fpca = function(x, t, proportion = 0.9, nBasis = NA) {
-  eigenAnalysis = eigen(x)
+# Details: Section 3.3
+# Input:
+#   - sigma [matrix] : sample covariance matrix
+#   - t [array] : domain of observations x(t)
+#   - proportion [double] : score of fPCA, which affects how many basis(eigenfunctions) to be preserved. Usually a high score is needed to 
+#                           fully recover the original function
+#   - nBasis [int] : how many eigenfunctions to be preserved. Usually set to NA as we use proportion instead.
+#                    We usually use proportion instead (i.e. set nBasis = NA), but if nBasis is given, then proportion will NOT be effective!
+# Output: [list]
+#   - eigenvalue [array] : functional eigenvalue
+#   - truncatedEigenvalue [array]: truncated functional eigenvalue
+#   - eigenvector [dataframe]: discretised eigenfunction, due to sampling limitation there can be at most length(t) eigenfunctions though.
+#                              Each column is one discretised eigenfunction
+#   - truncatedEigenvector [dataframe]: truncated discretised eigenfunction
+
+
+
+fpca = function(sigma, t, proportion = 0.9, nBasis = NA) {
+  eigenAnalysis = eigen(sigma)
   # gamma: eigenvector (matrix)
   # lambda: eigenvalue (matrix)
   gamma = eigenAnalysis$vectors
@@ -16,11 +37,11 @@ fpca = function(x, t, proportion = 0.9, nBasis = NA) {
     k = nBasis
   }
   
-  J = dim(x)[2]
+  J = dim(sigma)[2]
   w = (max(t) - min(t))/J
   
   # rho: eigenvalue (functional)
-  # xi: eigenvalue (functional)
+  # xi: discretised eigenfunction
   rho = w * lambda
   xi = w^(-0.5) * gamma
   
@@ -30,3 +51,11 @@ fpca = function(x, t, proportion = 0.9, nBasis = NA) {
              'truncatedEigenvector' = xi[, 1:k])
   return(out)
 }
+
+
+
+# # Example
+# sigma = matrix(rnorm(9, 0, 1), nrow = 3)
+# t = 1:100
+# out = fpca(sigma = sigma, t = t, proportion = 0.9, nBasis = NA)
+

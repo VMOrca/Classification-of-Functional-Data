@@ -1,9 +1,22 @@
-# KNN with Lp norm as metric
-# x: Training data, must be a matrix. row = i-th observation, column = x(t)
-# y: Class label for observations in x. Length of y must be the same as number of rows of x.
-# xNew: new observations - must be a matrix
-# t: domain of x
-# k: hyperparameter
+#########################################################################################################################################
+#
+#                                                       Author: Min Sun
+#
+#########################################################################################################################################
+
+# Function to compute KNN
+# Detail: Section 4.1
+# Input:
+#   - x [dataframe] : training data, must be datafrmae
+#   - t [array] : an array of domain of xNew, which is usually time. Must have the same dimension as dim(xNew)[2]
+#   - xNew [dataframe] : validation or test data, must be datafrmae
+#   - y [array] : label for training data, must be vector
+#   - k [int] : hyperparameter, which controls the number of nearest points to be considered by the algorithm
+#   - metric [char] : metric to be used, currently only supports c('LpNorm', 'supNorm')
+# Output: [list]
+#     - Label Prediction [array] : prediction of xNew. Dimension will be equal to dim(xNew)[1]
+#     - Probability [dataframe] : probability of each predicted value of xNew
+
 knn = function(x, t, y, xNew, k, metric = 'LpNorm') {
   n = dim(x)[1]
   m = dim(xNew)[1]
@@ -39,3 +52,17 @@ knn = function(x, t, y, xNew, k, metric = 'LpNorm') {
 #           k = 10, 
 #           metric = LpNorm)
 
+
+
+# Example
+# library(tidyverse)
+# n = 10
+# df = data.frame(matrix(rnorm(100, 0, 1), nrow = n))
+# y = sample(0:1, n, replace = TRUE)
+# t = 1:dim(df)[2]
+# out = knn(x =  df,
+#           y = y,
+#           t = t, 
+#           xNew = df, 
+#           k = 1, 
+#           metric = 'LpNorm')
